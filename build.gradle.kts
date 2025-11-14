@@ -58,3 +58,42 @@ allOpen {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+// Custom tasks (like npm scripts)
+tasks.register("version") {
+	group = "help"
+	description = "Display project Java version"
+	doLast {
+		val toolchain = project.extensions.getByType<JavaToolchainService>()
+		val javaLauncher = toolchain.launcherFor {
+			languageVersion.set(JavaLanguageVersion.of(21))
+		}.get()
+
+		println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+		println("📦 Project Java Configuration")
+		println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+		println("Project compiles to: Java 21")
+		println("Toolchain location: ${javaLauncher.metadata.installationPath}")
+		println("Gradle daemon runs on: Java ${JavaVersion.current()}")
+		println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	}
+}
+
+tasks.register("dev") {
+	group = "application"
+	description = "Run the application in development mode"
+	dependsOn("bootRun")
+}
+
+tasks.register("info") {
+	group = "help"
+	description = "Display project information"
+	doLast {
+		println("Project: ${project.name}")
+		println("Version: ${project.version}")
+		println("Description: ${project.description}")
+		println("Java Toolchain: 21")
+		println("Kotlin: 1.9.25")
+		println("Spring Boot: 3.5.7")
+	}
+}
