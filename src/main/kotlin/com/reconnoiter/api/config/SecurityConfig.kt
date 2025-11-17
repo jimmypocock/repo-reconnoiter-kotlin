@@ -27,11 +27,17 @@ class SecurityConfig(
                 auth
                     // Public endpoints
                     .requestMatchers(
+                        "/",
+                        "/auth/**",
+                        "/openapi.json",
+                        "/openapi.yml",
                         "/actuator/**",
                         "/repositories",
                         "/repositories/*",
+                        "/repositories/status/*",
                         "/comparisons",
                         "/comparisons/*",
+                        "/comparisons/status/*",
                         "/login/**",
                         "/oauth2/**"
                     ).permitAll()

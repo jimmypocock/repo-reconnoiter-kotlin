@@ -1,8 +1,6 @@
 # Docker Compose for local development
 # Provides MySQL database for the Kotlin API
 
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0

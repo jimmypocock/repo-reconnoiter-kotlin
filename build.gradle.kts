@@ -1,9 +1,9 @@
 plugins {
-	kotlin("jvm") version "1.9.25"
-	kotlin("plugin.spring") version "1.9.25"
+	kotlin("jvm") version "2.2.21"
+	kotlin("plugin.spring") version "2.2.21"
 	id("org.springframework.boot") version "3.5.7"
 	id("io.spring.dependency-management") version "1.1.7"
-	kotlin("plugin.jpa") version "1.9.25"
+	kotlin("plugin.jpa") version "2.2.21"
 }
 
 group = "com.reconnoiter"
@@ -28,7 +28,12 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+	// Database migrations
+	implementation("org.flywaydb:flyway-core")
+	implementation("org.flywaydb:flyway-mysql")
 
 	// JWT dependencies (JJWT)
 	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
@@ -45,7 +50,7 @@ dependencies {
 
 kotlin {
 	compilerOptions {
-		freeCompilerArgs.addAll("-Xjsr305=strict")
+		freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
 	}
 }
 
@@ -93,7 +98,8 @@ tasks.register("info") {
 		println("Version: ${project.version}")
 		println("Description: ${project.description}")
 		println("Java Toolchain: 21")
-		println("Kotlin: 1.9.25")
+		println("Kotlin: 2.2.21")
 		println("Spring Boot: 3.5.7")
+		println("Gradle: 9.2.0")
 	}
 }

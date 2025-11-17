@@ -1,0 +1,42 @@
+# Development Profile Configuration
+# Activate with: SPRING_PROFILES_ACTIVE=dev or --spring.profiles.active=dev
+
+spring:
+  # Database defaults for local development
+  datasource:
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/reconnoiter_dev}
+    username: ${DATABASE_USERNAME:reconnoiter}
+    password: ${DATABASE_PASSWORD:devpassword}
+
+  # GitHub OAuth defaults (replace with your actual dev credentials)
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID:your_dev_github_client_id}
+            client-secret: ${GITHUB_CLIENT_SECRET:your_dev_github_client_secret}
+
+  jpa:
+    show-sql: true  # Show SQL in console
+    properties:
+      hibernate:
+        format_sql: true  # Pretty-print SQL
+
+# JWT defaults for local development (NOT secure - for dev only!)
+jwt:
+  secret: ${JWT_SECRET:dev_jwt_secret_key_NOT_SECURE_FOR_PRODUCTION_USE_ONLY_1234567890}
+
+# Verbose logging (Rails-like output)
+logging:
+  level:
+    root: INFO
+    web: DEBUG  # Request/response details
+    org.springframework.web: DEBUG  # HTTP requests
+    org.springframework.web.servlet.mvc.method.annotation: TRACE  # Controller execution
+    org.hibernate.SQL: DEBUG  # SQL queries
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # SQL parameter values
+    org.hibernate.orm.jdbc.bind: TRACE  # Parameter binding
+    com.reconnoiter.api: DEBUG  # Your application code
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %clr(%-5level) %clr([%thread]){magenta} %clr(%logger{36}){cyan} : %msg%n"

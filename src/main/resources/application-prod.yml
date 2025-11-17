@@ -1,0 +1,19 @@
+# Production Profile Configuration
+# Activate with: SPRING_PROFILES_ACTIVE=prod
+
+spring:
+  jpa:
+    show-sql: false  # Don't show SQL in production logs
+    properties:
+      hibernate:
+        format_sql: false  # No formatting needed
+
+# Minimal logging (performance optimized)
+logging:
+  level:
+    root: WARN  # Only warnings and errors
+    com.reconnoiter.api: INFO  # Your application code at INFO level
+    org.springframework.web: WARN  # Minimal Spring logs
+    org.hibernate: WARN  # No SQL logging
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n"

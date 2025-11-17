@@ -1,0 +1,192 @@
+openapi: 3.1.0
+
+info:
+  title: RepoReconnoiter API (Kotlin)
+  version: 1.0.0
+  description: |
+    REST API for RepoReconnoiter - AI-powered GitHub repository comparison and discovery platform.
+
+    **This is the Kotlin/Spring Boot implementation matching the Rails API.**
+
+    ## Features
+    - Search and filter repository comparisons
+    - AI-generated repository recommendations
+    - Category-based browsing
+    - Real-time comparison creation progress via WebSocket
+
+    ## Authentication
+
+    **Two-level authentication system:**
+
+    ### 1. App-Level Authentication (Required for most endpoints)
+    - **API Key:** Add `Authorization: Bearer <API_KEY>` header to requests
+    - **Purpose:** Proves request is from an authorized application
+    - Server-side only - never expose key in browser/client code
+
+    ### 2. User-Level Authentication (Required for user-specific endpoints)
+    - **JWT Token:** Add `X-User-Token: <JWT>` header for user-authenticated endpoints
+    - **Purpose:** Proves which user is making the request
+    - **How to get JWT:** Call `/api/v1/auth/exchange` with GitHub OAuth token
+    - JWT expires after 24 hours
+
+    ### Authentication Flow
+    1. User authenticates with GitHub OAuth (handled by your frontend)
+    2. Frontend exchanges GitHub token for JWT via `/api/v1/auth/exchange`
+    3. Frontend includes both API key + JWT in subsequent requests
+
+    ### Public Endpoints (No Authentication)
+    - `/api/v1` - API root (discovery endpoint)
+    - `/api/v1/openapi.json` - OpenAPI JSON specification
+    - `/api/v1/openapi.yml` - OpenAPI YAML specification
+
+  contact:
+    name: API Support
+    url: https://reporeconnoiter.com
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.reporeconnoiter.com/api/v1
+    description: Production server (when deployed)
+
+tags:
+  - name: Root
+    description: API discovery and information
+  - name: Authentication
+    description: User authentication and JWT token management
+  - name: Comparisons
+    description: Repository comparison operations
+  - name: Repositories
+    description: Repository browsing and analysis operations
+  - name: Profile
+    description: User profile and statistics
+  - name: Admin
+    description: Administrative endpoints (admin role required)
+  - name: Documentation
+    description: API documentation endpoints
+
+paths:
+  /:
+    get:
+      tags:
+        - Root
+      summary: API root endpoint
+      description: Returns API information and available endpoints
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Welcome to RepoReconnoiter API v1"
+                  version:
+                    type: string
+                    example: "v1"
+                  note:
+                    type: string
+                  endpoints:
+                    type: object
+                  authentication:
+                    type: object
+
+  /auth/exchange:
+    post:
+      tags:
+        - Authentication
+      summary: Exchange GitHub OAuth token for JWT
+      description: Verifies GitHub token, checks whitelist, and returns JWT for authenticated requests
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - githubToken
+              properties:
+                githubToken:
+                  type: string
+                  description: GitHub OAuth access token
+                  example: "gho_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      responses:
+        '200':
+          description: Successful exchange
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwt:
+                    type: string
+                    description: JWT token for API authentication
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      githubId:
+                        type: integer
+                      githubUsername:
+                        type: string
+                      email:
+                        type: string
+                      avatarUrl:
+                        type: string
+                      name:
+                        type: string
+                      admin:
+                        type: boolean
+        '400':
+          description: Bad request (missing token)
+        '401':
+          description: Invalid GitHub token
+        '403':
+          description: Access denied (not whitelisted)
+
+  /openapi.json:
+    get:
+      tags:
+        - Documentation
+      summary: OpenAPI specification (JSON)
+      description: Returns the OpenAPI specification in JSON format
+      responses:
+        '200':
+          description: OpenAPI JSON specification
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /openapi.yml:
+    get:
+      tags:
+        - Documentation
+      summary: OpenAPI specification (YAML)
+      description: Returns the OpenAPI specification in YAML format
+      responses:
+        '200':
+          description: OpenAPI YAML specification
+          content:
+            application/x-yaml:
+              schema:
+                type: string
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: API key authentication for trusted clients (server-side only)
+
+    UserAuth:
+      type: apiKey
+      in: header
+      name: X-User-Token
+      description: JWT token for user-level authentication

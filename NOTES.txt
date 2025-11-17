@@ -1,0 +1,81 @@
+API start commands:
+...Open Docker Desktop
+docker-compose up -d
+
+
+Setup Insomnia API
+
+Environment:
+- base_url:
+- api_key
+
+
+🧪 Testing with Insomnia (Right Now)
+
+Setup Steps:
+
+1. Start the Kotlin API:
+cd repo-reconnoiter-kotlin
+./gradlew bootRun
+The API will start at http://localhost:8080/api/v1
+
+2. Create Insomnia Collection:
+
+Create these requests in Insomnia:
+
+Request 1: API Root (No Auth)
+GET http://localhost:8080/api/v1/
+
+Request 2: OpenAPI JSON (No Auth)
+GET http://localhost:8080/api/v1/openapi.json
+
+Request 3: List Repositories (No Auth - currently public)
+GET http://localhost:8080/api/v1/repositories?page=1&per_page=20
+
+Request 4: Get Repository Details (No Auth)
+GET http://localhost:8080/api/v1/repositories/1
+
+Request 5: Auth Exchange (Requires GitHub Token)
+POST http://localhost:8080/api/v1/auth/exchange
+Content-Type: application/json
+
+{
+"githubToken": "your_github_token_here"
+}
+
+Request 6: Profile (Requires JWT)
+GET http://localhost:8080/api/v1/profile
+Headers:
+X-User-Token: <jwt_from_auth_exchange>
+
+---
+Now let me start building the complete API. I'll begin with Step 1: Database Schema.
+
+2. Implement Business Logic (High Priority)
+
+- Actual analysis logic (OpenAI integration)
+- Actual comparison creation (GitHub API + AI)
+- Background job infrastructure (Spring's @Async or dedicated job library)
+- Status tracking for async operations
+
+- Real statistics in AdminController
+
+3. Security Hardening (High Priority)
+
+- API key authentication layer (currently bypassed)
+- Rate limiting (Spring framework or library like Bucket4j)
+- CORS configuration
+- Security headers (CSP, HSTS, etc.)
+
+4. Configuration (Medium Priority)
+
+- Environment-specific configs (dev/staging/prod)
+- Externalized secrets (database, GitHub OAuth, OpenAI API key, JWT secret)
+- WebSocket configuration for real-time progress
+- Admin GitHub IDs allowlist
+
+5. Testing & Quality (Medium Priority)
+
+- Unit tests for controllers
+- Integration tests for API endpoints
+- Error handling improvements

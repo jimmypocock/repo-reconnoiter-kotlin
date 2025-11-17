@@ -1,0 +1,42 @@
+-- Create analyses table
+-- Stores versioned AI-generated insights for repositories
+CREATE TABLE analyses (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    repository_id BIGINT NOT NULL,
+    user_id BIGINT,
+    type VARCHAR(255) NOT NULL COMMENT 'tier1_categorization, tier2_deep_analysis',
+    summary TEXT,
+    use_cases TEXT,
+    why_care TEXT,
+    key_insights TEXT,
+    readme_analysis TEXT,
+    issues_analysis TEXT,
+    adoption_analysis TEXT,
+    maintenance_analysis TEXT,
+    security_analysis TEXT,
+    learning_value TEXT,
+    maturity_assessment VARCHAR(255),
+    quality_signals JSON,
+    model_used VARCHAR(255) NOT NULL,
+    input_tokens INT,
+    output_tokens INT,
+    cost_usd DECIMAL(10, 6),
+    is_current BOOLEAN DEFAULT TRUE,
+    content_hash VARCHAR(255),
+    expires_at TIMESTAMP NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    KEY idx_analyses_repository (repository_id),
+    KEY idx_analyses_user (user_id),
+    KEY idx_analyses_type (type),
+    KEY idx_analyses_is_current (is_current),
+    KEY idx_analyses_created_at (created_at),
+    KEY idx_analyses_cost (cost_usd),
+    KEY idx_analyses_current (repository_id, type, is_current),
+    KEY idx_analyses_user_created (user_id, created_at),
+    KEY idx_analyses_user_type_created (user_id, type, created_at),
+
+    CONSTRAINT fk_analyses_repository FOREIGN KEY (repository_id) REFERENCES repositories(id) ON DELETE CASCADE,
+    CONSTRAINT fk_analyses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
