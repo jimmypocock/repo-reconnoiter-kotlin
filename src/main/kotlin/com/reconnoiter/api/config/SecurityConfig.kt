@@ -1,5 +1,6 @@
 package com.reconnoiter.api.config
 
+import com.reconnoiter.api.security.ApiKeyAuthenticationFilter
 import com.reconnoiter.api.security.JwtAuthenticationFilter
 import com.reconnoiter.api.security.OAuth2LoginSuccessHandler
 import jakarta.servlet.http.HttpServletResponse
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
+    private val apiKeyAuthenticationFilter: ApiKeyAuthenticationFilter,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val oauth2LoginSuccessHandler: OAuth2LoginSuccessHandler
 ) {
@@ -25,23 +27,14 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth
-                    // Public endpoints
+                    // Public endpoints (no auth required at all)
                     .requestMatchers(
                         "/",
-                        "/auth/**",
-                        "/openapi.json",
-                        "/openapi.yml",
-                        "/actuator/**",
-                        "/repositories",
-                        "/repositories/*",
-                        "/repositories/status/*",
-                        "/comparisons",
-                        "/comparisons/*",
-                        "/comparisons/status/*",
-                        "/login/**",
-                        "/oauth2/**"
+                        "/actuator/health",
+                        "/actuator/info"
                     ).permitAll()
-                    // All other endpoints require authentication
+                    // All other endpoints require at least API key auth
+                    // JWT filter will handle user-specific endpoints
                     .anyRequest().authenticated()
             }
             .oauth2Login { oauth2 ->
@@ -54,10 +47,12 @@ class SecurityConfig(
                     .authenticationEntryPoint { _, response, _ ->
                         response.status = HttpServletResponse.SC_UNAUTHORIZED
                         response.contentType = "application/json"
-                        response.writer.write("""{"error":"Unauthorized - Please provide a valid X-User-Token header"}""")
+                        response.writer.write("""{"error":"Unauthorized","message":"Please provide valid authentication headers"}""")
                     }
             }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            // Order matters: API Key filter first, then JWT filter
+            .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterAfter(jwtAuthenticationFilter, ApiKeyAuthenticationFilter::class.java)
 
         return http.build()
     }

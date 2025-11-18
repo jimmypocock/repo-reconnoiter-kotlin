@@ -1,24 +1,26 @@
 package com.reconnoiter.api.controller
 
-import com.reconnoiter.api.model.User
-import org.springframework.http.HttpStatus
+import com.reconnoiter.api.dto.ComparisonDetailResponse
+import com.reconnoiter.api.dto.ComparisonResponse
+import com.reconnoiter.api.dto.PagedResponse
+import com.reconnoiter.api.repository.ComparisonRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import java.util.*
+import java.time.LocalDateTime
 
 /**
  * API v1 Comparisons Controller
  *
  * Endpoints:
  *   GET /comparisons - List comparisons with filtering, search, pagination
- *   POST /comparisons - Create comparison (async, requires user auth)
  *   GET /comparisons/:id - Show single comparison
- *   GET /comparisons/status/:session_id - Get creation status
  */
 @RestController
 @RequestMapping("/comparisons")
-class ComparisonsController {
+class ComparisonsController(
+    private val comparisonRepository: ComparisonRepository
+) {
 
     /**
      * GET /comparisons
@@ -38,85 +40,49 @@ class ComparisonsController {
         @RequestParam(required = false, defaultValue = "recent") sort: String,
         @RequestParam(required = false, defaultValue = "1") page: Int,
         @RequestParam(required = false, defaultValue = "20", name = "per_page") perPage: Int
-    ): ResponseEntity<*> {
-        // TODO: Implement when Comparison model is ready
+    ): ResponseEntity<PagedResponse<ComparisonResponse>> {
+        // Cap per_page at 100
         val itemsPerPage = minOf(perPage, 100)
 
-        return ResponseEntity.ok(
-            mapOf(
-                "data" to emptyList<Any>(),
-                "meta" to mapOf(
-                    "pagination" to mapOf(
-                        "page" to page,
-                        "per_page" to itemsPerPage,
-                        "total_pages" to 0,
-                        "total_count" to 0,
-                        "next_page" to null,
-                        "prev_page" to null
-                    )
-                ),
-                "note" to "Comparison listing will be available once Comparison model is implemented"
-            )
-        )
-    }
+        // Spring Data uses 0-based page numbers
+        val pageNumber = maxOf(0, page - 1)
 
-    /**
-     * POST /comparisons
-     * Creates a comparison asynchronously and returns session info for tracking
-     *
-     * Headers:
-     *   X-User-Token: <JWT>
-     *
-     * Body:
-     *   { "query": "Rails background job library" }
-     *
-     * Response (202 Accepted):
-     *   {
-     *     "session_id": "uuid",
-     *     "status": "processing",
-     *     "websocket_url": "ws://localhost:8080/cable",
-     *     "status_url": "/api/v1/comparisons/status/uuid"
-     *   }
-     */
-    @PostMapping
-    fun create(
-        @RequestBody request: CreateComparisonRequest,
-        @AuthenticationPrincipal user: User?
-    ): ResponseEntity<*> {
-        // Check authentication
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                mapOf("error" to "Unauthorized - Please provide a valid X-User-Token header")
-            )
+        val pageable = PageRequest.of(pageNumber, itemsPerPage)
+
+        // Fetch comparisons based on filters
+        val comparisonsPage = when {
+            // Search query provided
+            !search.isNullOrBlank() -> {
+                comparisonRepository.searchByQuery(search.trim(), pageable)
+            }
+            // Date filter provided
+            date == "week" -> {
+                val weekAgo = LocalDateTime.now().minusWeeks(1)
+                comparisonRepository.findByCreatedAtAfter(weekAgo, pageable)
+            }
+            date == "month" -> {
+                val monthAgo = LocalDateTime.now().minusMonths(1)
+                comparisonRepository.findByCreatedAtAfter(monthAgo, pageable)
+            }
+            // Sort by popularity
+            sort == "popular" -> {
+                comparisonRepository.findAllByOrderByViewCountDesc(pageable)
+            }
+            // Default: sort by recent
+            else -> {
+                comparisonRepository.findAllByOrderByCreatedAtDesc(pageable)
+            }
         }
 
-        // Validate query
-        val query = request.query.trim()
-        if (query.isEmpty() || query.length > 500) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
-                mapOf(
-                    "error" to mapOf(
-                        "message" to "Invalid query",
-                        "details" to listOf("Query must be between 1 and 500 characters")
-                    )
-                )
-            )
-        }
-
-        // Generate session ID for tracking
-        val sessionId = UUID.randomUUID().toString()
-
-        // TODO: Implement when ComparisonStatus model and background job infrastructure are ready
-
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
-            mapOf(
-                "session_id" to sessionId,
-                "status" to "processing",
-                "websocket_url" to getWebsocketUrl(),
-                "status_url" to "/api/v1/comparisons/status/$sessionId",
-                "note" to "Comparison creation will be available once ComparisonStatus model and background job infrastructure are implemented"
-            )
+        val response = PagedResponse(
+            data = comparisonsPage.content.map { ComparisonResponse.from(it) },
+            page = page,
+            perPage = itemsPerPage,
+            totalPages = comparisonsPage.totalPages,
+            totalCount = comparisonsPage.totalElements
         )
+
+        return ResponseEntity.ok(response)
     }
 
     /**
@@ -143,55 +109,12 @@ class ComparisonsController {
      *   }
      */
     @GetMapping("/{id}")
-    fun show(@PathVariable id: Long): ResponseEntity<*> {
-        // TODO: Implement when Comparison model is ready
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-            mapOf(
-                "error" to mapOf(
-                    "message" to "Comparison not found",
-                    "details" to listOf("Comparison with ID $id does not exist (Comparison model not yet implemented)")
-                )
-            )
-        )
-    }
+    fun show(@PathVariable id: Long): ResponseEntity<ComparisonDetailResponse> {
+        val comparison = comparisonRepository.findById(id)
+            .orElseThrow { ComparisonNotFoundException("Comparison with ID $id not found") }
 
-    /**
-     * GET /comparisons/status/{session_id}
-     * Returns the current status of an async comparison creation
-     *
-     * Response (processing):
-     *   { "status": "processing" }
-     *
-     * Response (completed):
-     *   {
-     *     "status": "completed",
-     *     "comparison_id": 123,
-     *     "comparison_url": "/comparisons/123"
-     *   }
-     *
-     * Response (failed):
-     *   {
-     *     "status": "failed",
-     *     "error_message": "No repositories found"
-     *   }
-     */
-    @GetMapping("/status/{sessionId}")
-    fun status(@PathVariable sessionId: String): ResponseEntity<*> {
-        // TODO: Implement when ComparisonStatus model is ready
-        return ResponseEntity.ok(
-            mapOf(
-                "status" to "processing",
-                "note" to "Status tracking will be available once ComparisonStatus model is implemented"
-            )
-        )
-    }
-
-    private fun getWebsocketUrl(): String {
-        // TODO: Read from environment or configuration
-        return "ws://localhost:8080/cable"
+        return ResponseEntity.ok(ComparisonDetailResponse.from(comparison))
     }
 }
 
-data class CreateComparisonRequest(
-    val query: String
-)
+class ComparisonNotFoundException(message: String) : RuntimeException(message)

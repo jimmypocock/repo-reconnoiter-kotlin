@@ -22,16 +22,22 @@ class RootController {
                 version = "v1",
                 note = "This endpoint is public and does not require authentication",
                 endpoints = mapOf(
+                    "auth" to EndpointInfo(
+                        url = "/api/v1/auth/exchange",
+                        methods = listOf("POST"),
+                        description = "Exchange GitHub OAuth token for JWT",
+                        authentication = "Required (API Key only)"
+                    ),
                     "comparisons" to EndpointInfo(
                         url = "/api/v1/comparisons",
-                        methods = listOf("GET", "POST"),
-                        description = "List and create repository comparisons",
+                        methods = listOf("GET"),
+                        description = "List repository comparisons with filtering and search",
                         authentication = "Required"
                     ),
                     "repositories" to EndpointInfo(
                         url = "/api/v1/repositories",
-                        methods = listOf("GET", "POST"),
-                        description = "List repositories and trigger deep analysis",
+                        methods = listOf("GET"),
+                        description = "List repositories with filtering and pagination",
                         authentication = "Required"
                     ),
                     "profile" to EndpointInfo(
@@ -39,6 +45,12 @@ class RootController {
                         methods = listOf("GET"),
                         description = "Get current user profile",
                         authentication = "Required (User Token)"
+                    ),
+                    "admin" to EndpointInfo(
+                        url = "/api/v1/admin/stats",
+                        methods = listOf("GET"),
+                        description = "Platform-wide statistics (admin only)",
+                        authentication = "Required (Admin User Token)"
                     ),
                     "documentation" to DocumentationInfo(
                         openapiJson = "/api/v1/openapi.json",

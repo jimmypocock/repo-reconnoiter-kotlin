@@ -40,6 +40,9 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
+	// Spring Shell (interactive console like Rails console)
+	implementation("org.springframework.shell:spring-shell-starter:3.3.3")
+
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -62,6 +65,11 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+// Specify main class for bootJar (since we have multiple main classes in task scripts)
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
 }
 
 // Custom tasks (like npm scripts)
@@ -102,4 +110,94 @@ tasks.register("info") {
 		println("Spring Boot: 3.5.7")
 		println("Gradle: 9.2.0")
 	}
+}
+
+// Database Tasks (like Rails rake tasks)
+tasks.register<JavaExec>("dbSeed") {
+	group = "database"
+	description = "Seed the database with initial data"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev,dbSeed")
+}
+
+// API Key Tasks (like Rails rake api_keys:*)
+tasks.register<JavaExec>("apiKeyGenerate") {
+	group = "api_keys"
+	description = "Generate a new API key. Usage: ./gradlew apiKeyGenerate -Pname='Key Name' [-Pemail='user@example.com']"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev,apiKeyGenerate")
+
+	// Pass properties as args
+	val keyName = project.findProperty("name")?.toString() ?: "default"
+	val userEmail = project.findProperty("email")?.toString()
+	args = if (userEmail != null) listOf(keyName, userEmail) else listOf(keyName)
+}
+
+tasks.register<JavaExec>("apiKeyList") {
+	group = "api_keys"
+	description = "List all API keys with usage stats"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev,apiKeyList")
+}
+
+tasks.register<JavaExec>("apiKeyRevoke") {
+	group = "api_keys"
+	description = "Revoke an API key. Usage: ./gradlew apiKeyRevoke -Pid=123"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev,apiKeyRevoke")
+
+	val keyId = project.findProperty("id")?.toString() ?: error("Please provide -Pid=<key_id>")
+	args = listOf(keyId)
+}
+
+// Whitelist Tasks (like Rails rake whitelist:*)
+tasks.register<JavaExec>("whitelistAdd") {
+	group = "whitelist"
+	description = "Add user to whitelist. Usage: ./gradlew whitelistAdd -PgithubId=123 -Pusername='user' [-Pemail='user@example.com'] [-Pnotes='notes']"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev,whitelistAdd")
+
+	val githubId = project.findProperty("githubId")?.toString() ?: error("Please provide -PgithubId=<id>")
+	val username = project.findProperty("username")?.toString() ?: error("Please provide -Pusername=<username>")
+	val email = project.findProperty("email")?.toString()
+	val notes = project.findProperty("notes")?.toString()
+
+	args = listOfNotNull(githubId, username, email, notes)
+}
+
+tasks.register<JavaExec>("whitelistList") {
+	group = "whitelist"
+	description = "List all whitelisted users"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev,whitelistList")
+}
+
+tasks.register<JavaExec>("whitelistRemove") {
+	group = "whitelist"
+	description = "Remove user from whitelist. Usage: ./gradlew whitelistRemove -Pusername='user'"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev,whitelistRemove")
+
+	val username = project.findProperty("username")?.toString() ?: error("Please provide -Pusername=<username>")
+	args = listOf(username)
+}
+
+// Spring Shell (Interactive Console like Rails console)
+tasks.register<JavaExec>("shell") {
+	group = "application"
+	description = "Launch interactive Spring Shell console (like Rails console)"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev")
+	standardInput = System.`in`
+
+	// Enable interactive mode
+	systemProperty("spring.shell.interactive.enabled", "true")
 }
