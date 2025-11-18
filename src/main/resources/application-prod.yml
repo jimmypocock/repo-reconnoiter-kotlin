@@ -1,19 +1,129 @@
+# ============================================
 # Production Profile Configuration
 # Activate with: SPRING_PROFILES_ACTIVE=prod
+# ============================================
 
 spring:
+  # Database connection pool (HikariCP - Spring Boot default)
+  datasource:
+    hikari:
+      # Connection pool sizing
+      maximum-pool-size: 10  # Max connections (adjust based on traffic)
+      minimum-idle: 2  # Minimum idle connections
+      connection-timeout: 30000  # 30 seconds
+      idle-timeout: 600000  # 10 minutes
+      max-lifetime: 1800000  # 30 minutes
+      # Performance
+      auto-commit: true
+      # Connection testing
+      connection-test-query: SELECT 1
+      # Leak detection (for debugging connection issues)
+      leak-detection-threshold: 60000  # 60 seconds
+
+  # JPA/Hibernate production settings
   jpa:
     show-sql: false  # Don't show SQL in production logs
+    open-in-view: false  # API-only, no views
     properties:
       hibernate:
         format_sql: false  # No formatting needed
+        # Query optimization
+        jdbc:
+          batch_size: 20  # Batch inserts/updates
+          fetch_size: 50  # JDBC fetch size
+        # Second-level cache (disabled by default - enable if needed)
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+        # Statistics (disable in production)
+        generate_statistics: false
 
-# Minimal logging (performance optimized)
+  # Flyway (database migrations)
+  flyway:
+    baseline-on-migrate: true
+    validate-on-migrate: true  # Validate migrations before running
+    out-of-order: false  # Enforce migration order
+
+  # Graceful shutdown timeout
+  lifecycle:
+    timeout-per-shutdown-phase: 30s  # Wait up to 30s for requests to complete
+
+# Server configuration
+server:
+  port: ${SERVER_PORT:8080}
+
+  # Graceful shutdown (wait for requests to complete)
+  shutdown: graceful
+
+  # Compression (reduce bandwidth)
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+    min-response-size: 1024  # 1KB minimum
+
+  # Error handling
+  error:
+    include-message: never  # Don't expose error messages
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+# Actuator endpoints (minimal for production)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health  # Only expose health endpoint
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: never  # Don't expose internal details
+      probes:
+        enabled: true  # Enable Kubernetes-style probes
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+  # Metrics (optional - enable if using monitoring)
+  metrics:
+    export:
+      prometheus:
+        enabled: false  # Enable if using Prometheus
+  # Security
+  server:
+    port: 8080  # Same port as main application
+
+# Logging configuration (production)
 logging:
   level:
-    root: WARN  # Only warnings and errors
-    com.reconnoiter.api: INFO  # Your application code at INFO level
+    root: INFO  # Changed from WARN to INFO for better observability
+    com.reconnoiter.api: INFO  # Your application code
     org.springframework.web: WARN  # Minimal Spring logs
+    org.springframework.security: WARN  # Security logs
     org.hibernate: WARN  # No SQL logging
+    com.zaxxer.hikari: INFO  # Connection pool info
   pattern:
+    # Structured logging for CloudWatch
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n"
+
+# JWT Configuration (read from environment)
+jwt:
+  secret: ${JWT_SECRET}  # Required - set via Secrets Manager
+  expiration: 86400000  # 24 hours
+
+# Custom application properties
+reconnoiter:
+  # Rate limiting (if needed)
+  rate-limit:
+    enabled: true
+    requests-per-day: 25
+
+  # Security
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:https://reporeconnoiter.com}
+
+  # Feature flags
+  features:
+    github-sync: ${FEATURE_GITHUB_SYNC:false}
+    openai-analysis: ${FEATURE_OPENAI_ANALYSIS:false}

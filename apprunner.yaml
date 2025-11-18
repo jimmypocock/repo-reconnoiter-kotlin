@@ -1,0 +1,97 @@
+# ============================================
+# AWS App Runner Configuration
+# Production-grade configuration for Spring Boot 3.5
+# ============================================
+
+version: 1.0
+runtime: docker
+
+build:
+  commands:
+    # Pre-build: Verify environment
+    pre-build:
+      - echo "Building RepoReconnoiter Kotlin API..."
+      - echo "Docker version $(docker --version)"
+      - echo "Build started at $(date)"
+
+    # Build: Create Docker image
+    build:
+      - docker build -t repo-reconnoiter-api:latest .
+
+    # Post-build: Verify image
+    post-build:
+      - echo "Build completed at $(date)"
+      - docker images | grep repo-reconnoiter-api
+
+run:
+  # Runtime configuration
+  runtime-environment-variables:
+    # Spring Boot profile
+    - name: SPRING_PROFILES_ACTIVE
+      value: "prod"
+
+    # Server configuration
+    - name: SERVER_PORT
+      value: "8080"
+
+    # JVM timezone (UTC for consistency)
+    - name: TZ
+      value: "UTC"
+
+    # Logging configuration
+    - name: LOGGING_LEVEL_ROOT
+      value: "INFO"
+    - name: LOGGING_LEVEL_COM_RECONNOITER
+      value: "INFO"
+
+  # Network configuration
+  network:
+    # Port that the application listens on
+    port: 8080
+
+    # Ingress: Public endpoint
+    ingress:
+      # Allow public internet traffic
+      is-publicly-accessible: true
+
+  # Health check configuration
+  health-check:
+    # Use Spring Boot Actuator health endpoint
+    path: /actuator/health
+    interval: 30
+    timeout: 5
+    healthy-threshold: 1
+    unhealthy-threshold: 3
+
+  # Instance configuration
+  instance-configuration:
+    # CPU and memory (0.25 vCPU = 256, 0.5 GB = 512 MB)
+    cpu: "0.25"
+    memory: "0.5"
+
+  # Auto-scaling configuration
+  auto-scaling:
+    # Min/max instances
+    min-size: 1
+    max-size: 3
+
+    # Auto-scaling based on concurrent requests
+    max-concurrency: 100
+
+  # Environment secrets (set via AWS Console/CDK)
+  # These are injected as environment variables at runtime
+  # - DATABASE_URL (from RDS)
+  # - GITHUB_CLIENT_ID (from Secrets Manager)
+  # - GITHUB_CLIENT_SECRET (from Secrets Manager)
+  # - OPENAI_ACCESS_TOKEN (from Secrets Manager)
+  # - ALLOWED_ADMIN_GITHUB_IDS (from Parameter Store)
+  # - JWT_SECRET_KEY (from Secrets Manager)
+
+# ============================================
+# Notes:
+# - Secrets must be configured via AWS Console or CDK
+# - Database connection string injected via DATABASE_URL
+# - Spring Boot will auto-configure PostgreSQL from DATABASE_URL
+# - Health check endpoint must be enabled in application-prod.yml
+# - Port 8080 must match SERVER_PORT and application config
+# ============================================

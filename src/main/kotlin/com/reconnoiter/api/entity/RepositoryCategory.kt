@@ -1,38 +1,38 @@
-package com.reconnoiter.api.model
+package com.reconnoiter.api.entity
 
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
 @Table(
-    name = "comparison_categories",
+    name = "repository_categories",
     indexes = [
-        Index(name = "idx_comparison_categories_unique", columnList = "comparison_id,category_id", unique = true),
-        Index(name = "idx_comparison_categories_comparison", columnList = "comparison_id"),
-        Index(name = "idx_comparison_categories_category", columnList = "category_id")
+        Index(name = "idx_repo_categories_unique", columnList = "repository_id,category_id", unique = true),
+        Index(name = "idx_repo_categories_repository", columnList = "repository_id"),
+        Index(name = "idx_repo_categories_category", columnList = "category_id"),
+        Index(name = "idx_repo_categories_confidence", columnList = "confidence_score")
     ]
 )
-data class ComparisonCategory(
+data class RepositoryCategory(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comparison_id", nullable = false)
-    val comparison: Comparison,
+    @JoinColumn(name = "repository_id", nullable = false)
+    val repository: Repository,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     val category: Category,
 
-    @Column(name = "confidence_score", precision = 3, scale = 2)
-    val confidenceScore: BigDecimal? = null,
+    @Column(name = "confidence_score")
+    val confidenceScore: Float? = null,
 
     @Column(name = "assigned_by")
-    val assignedBy: String = "inferred",
+    val assignedBy: String = "ai", // ai, manual, github_topics
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

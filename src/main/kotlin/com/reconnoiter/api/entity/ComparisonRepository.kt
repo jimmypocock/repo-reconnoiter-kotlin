@@ -1,4 +1,4 @@
-package com.reconnoiter.api.model
+package com.reconnoiter.api.entity
 
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -11,7 +11,7 @@ import java.time.LocalDateTime
     indexes = [
         Index(name = "idx_comparison_repositories_comparison", columnList = "comparison_id"),
         Index(name = "idx_comparison_repositories_repository", columnList = "repository_id"),
-        Index(name = "idx_comparison_repositories_rank", columnList = "comparison_id,rank")
+        Index(name = "idx_comparison_repositories_ranking", columnList = "comparison_id,ranking")
     ]
 )
 data class ComparisonRepository(

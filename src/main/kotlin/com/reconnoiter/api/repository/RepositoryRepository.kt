@@ -1,6 +1,6 @@
 package com.reconnoiter.api.repository
 
-import com.reconnoiter.api.model.Repository
+import com.reconnoiter.api.entity.Repository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

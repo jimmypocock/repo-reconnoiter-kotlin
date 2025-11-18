@@ -1,6 +1,6 @@
 package com.reconnoiter.api.dto
 
-import com.reconnoiter.api.model.Repository
+import com.reconnoiter.api.entity.Repository
 import java.time.LocalDateTime
 
 data class RepositoryResponse(

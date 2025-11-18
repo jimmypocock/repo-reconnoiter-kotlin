@@ -1,6 +1,6 @@
 package com.reconnoiter.api.controller
 
-import com.reconnoiter.api.model.User
+import com.reconnoiter.api.entity.User
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping

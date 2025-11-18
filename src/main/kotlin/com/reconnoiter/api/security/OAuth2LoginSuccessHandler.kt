@@ -1,6 +1,6 @@
 package com.reconnoiter.api.security
 
-import com.reconnoiter.api.model.User
+import com.reconnoiter.api.entity.User
 import com.reconnoiter.api.repository.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

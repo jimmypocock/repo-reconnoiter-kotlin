@@ -1,6 +1,6 @@
 package com.reconnoiter.api.repository
 
-import com.reconnoiter.api.model.Category
+import com.reconnoiter.api.entity.Category
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository as SpringRepository
 

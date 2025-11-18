@@ -1,6 +1,6 @@
 package com.reconnoiter.api.tasks.runners
 
-import com.reconnoiter.api.model.WhitelistedUser
+import com.reconnoiter.api.entity.WhitelistedUser
 import com.reconnoiter.api.repository.WhitelistedUserRepository
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile

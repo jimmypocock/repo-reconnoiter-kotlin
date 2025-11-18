@@ -1,4 +1,4 @@
-package com.reconnoiter.api.model
+package com.reconnoiter.api.entity
 
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp

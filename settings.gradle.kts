@@ -1,1 +1,1 @@
-rootProject.name = "kotlin-api"
+rootProject.name = "repo-reconnoiter"

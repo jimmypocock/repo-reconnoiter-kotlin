@@ -1,0 +1,77 @@
+# ============================================
+# .dockerignore
+# Excludes unnecessary files from Docker build context
+# Reduces build time and image size
+# ============================================
+
+# Build artifacts
+build/
+target/
+bin/
+out/
+*.jar
+*.war
+*.class
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+
+# IDE files
+.idea/
+.vscode/
+.settings/
+.classpath
+.project
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+README.md
+CLAUDE.md
+TODO.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+# Logs
+logs/
+*.log
+
+# Test files
+src/test/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# AWS and deployment files
+cdk/
+terraform/
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Misc
+tmp/
+temp/
+.cache/
+node_modules/

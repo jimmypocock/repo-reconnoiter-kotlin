@@ -1,7 +1,7 @@
 # Spring Boot Configuration
 spring:
   application:
-    name: kotlin-api
+    name: repo-reconnoiter
 
   # Active profile (dev by default, override with SPRING_PROFILES_ACTIVE env var)
   profiles:
@@ -16,7 +16,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate  # Let Flyway manage schema, Hibernate just validates
-    show-sql: true
+    show-sql: false  # Overridden by dev profile
     open-in-view: false  # Disable for API-only apps (no views to render)
     properties:
       hibernate:

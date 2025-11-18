@@ -1,6 +1,6 @@
 package com.reconnoiter.api.repository
 
-import com.reconnoiter.api.model.ApiKey
+import com.reconnoiter.api.entity.ApiKey
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime

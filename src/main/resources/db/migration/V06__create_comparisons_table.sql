@@ -1,5 +1,4 @@
--- Create comparisons table
--- Stores user queries with AI-generated repository comparisons
+-- Comparisons table (user queries with AI-generated repository comparisons)
 CREATE TABLE comparisons (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT,

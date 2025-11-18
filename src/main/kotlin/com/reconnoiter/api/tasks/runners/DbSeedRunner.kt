@@ -1,6 +1,6 @@
 package com.reconnoiter.api.tasks.runners
 
-import com.reconnoiter.api.model.Category
+import com.reconnoiter.api.entity.Category
 import com.reconnoiter.api.repository.CategoryRepository
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile

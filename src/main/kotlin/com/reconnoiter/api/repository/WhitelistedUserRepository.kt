@@ -1,6 +1,6 @@
 package com.reconnoiter.api.repository
 
-import com.reconnoiter.api.model.WhitelistedUser
+import com.reconnoiter.api.entity.WhitelistedUser
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository as SpringRepository
 

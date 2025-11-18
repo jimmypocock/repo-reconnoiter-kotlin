@@ -1,5 +1,4 @@
--- Create analyses table
--- Stores versioned AI-generated insights for repositories
+-- Analyses table (versioned AI-generated insights for repositories)
 CREATE TABLE analyses (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     repository_id BIGINT NOT NULL,

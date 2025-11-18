@@ -1,4 +1,4 @@
-package com.reconnoiter.api.model
+package com.reconnoiter.api.entity
 
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -9,9 +9,9 @@ import java.time.LocalDateTime
 @Table(
     name = "categories",
     indexes = [
-        Index(name = "idx_categories_slug_type", columnList = "slug,category_type", unique = true),
-        Index(name = "idx_categories_type", columnList = "category_type"),
-        Index(name = "idx_categories_type_count", columnList = "category_type,repositories_count")
+        Index(name = "idx_slug_category_type", columnList = "slug,category_type", unique = true),
+        Index(name = "idx_category_type", columnList = "category_type"),
+        Index(name = "idx_category_type_repositories_count", columnList = "category_type,repositories_count")
     ]
 )
 data class Category(

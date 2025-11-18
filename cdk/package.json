@@ -1,0 +1,32 @@
+{
+  "name": "repo-reconnoiter-cdk",
+  "version": "1.0.0",
+  "description": "AWS CDK infrastructure for RepoReconnoiter API",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "diff": "cdk diff",
+    "deploy": "cdk deploy",
+    "destroy": "cdk destroy",
+    "synth": "cdk synth"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "infrastructure"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "aws-cdk": "^2.162.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.162.0",
+    "constructs": "^10.3.0"
+  }
+}

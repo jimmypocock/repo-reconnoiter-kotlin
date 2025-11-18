@@ -1,6 +1,6 @@
 package com.reconnoiter.api.dto
 
-import com.reconnoiter.api.model.Comparison
+import com.reconnoiter.api.entity.Comparison
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -163,7 +163,7 @@ data class CategorySummary(
     val categoryType: String
 ) {
     companion object {
-        fun from(comparisonCategory: com.reconnoiter.api.model.ComparisonCategory): CategorySummary {
+        fun from(comparisonCategory: com.reconnoiter.api.entity.ComparisonCategory): CategorySummary {
             return CategorySummary(
                 id = comparisonCategory.category.id!!,
                 name = comparisonCategory.category.name,
@@ -183,7 +183,7 @@ data class RepositorySummary(
     val score: Int?
 ) {
     companion object {
-        fun from(comparisonRepository: com.reconnoiter.api.model.ComparisonRepository): RepositorySummary {
+        fun from(comparisonRepository: com.reconnoiter.api.entity.ComparisonRepository): RepositorySummary {
             return RepositorySummary(
                 id = comparisonRepository.repository.id!!,
                 fullName = comparisonRepository.repository.fullName,

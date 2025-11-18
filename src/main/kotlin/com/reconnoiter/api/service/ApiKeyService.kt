@@ -1,7 +1,7 @@
 package com.reconnoiter.api.service
 
-import com.reconnoiter.api.model.ApiKey
-import com.reconnoiter.api.model.User
+import com.reconnoiter.api.entity.ApiKey
+import com.reconnoiter.api.entity.User
 import com.reconnoiter.api.repository.ApiKeyRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service

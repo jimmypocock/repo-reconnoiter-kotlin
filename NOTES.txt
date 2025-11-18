@@ -1,6 +1,18 @@
+- I see openapi.yml in the static files, but where does openapi.json exist? In the route controller?
+- Is GlobalExceptionHandler something that comes with Kotlin apps by default? It seems pretty basic. Same question for SecurityConfig.kt, is that something that comes by default? Are there any custom things written in that file that we added not in a typical kotlin app?
+- We should rename KotlinApiApplication to RepoReconnoiterApplication. That makes the most sense
+
+
+###
+# COMMANDS
+###
+LOG INTO MYSQL:
+mysql -h 127.0.0.1 -u reconnoiter -p reconnoiter_dev
+
 API start commands:
 ...Open Docker Desktop
 docker-compose up -d
+./gradlew bootRun
 
 
 Setup Insomnia API
