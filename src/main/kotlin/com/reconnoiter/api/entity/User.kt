@@ -58,8 +58,9 @@ data class User(
     @Column(name = "deleted_at")
     val deletedAt: LocalDateTime? = null,
 
-    @Column(name = "whitelisted_user_id")
-    val whitelistedUserId: Long? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "whitelisted_user_id")
+    val whitelistedUser: WhitelistedUser? = null,
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

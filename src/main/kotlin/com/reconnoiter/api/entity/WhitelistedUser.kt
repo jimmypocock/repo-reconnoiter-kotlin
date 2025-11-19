@@ -29,6 +29,9 @@ data class WhitelistedUser(
     @Column(name = "notes")
     val notes: String? = null,
 
+    @Column(name = "added_by")
+    val addedBy: String? = null,
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime? = null,

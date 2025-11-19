@@ -1,0 +1,37 @@
+[
+  {
+    "full_name": "sidekiq/sidekiq",
+    "name": "sidekiq",
+    "github_id": 123456,
+    "node_id": "MDEwOlJlcG9zaXRvcnkxMjM0NTY=",
+    "html_url": "https://github.com/sidekiq/sidekiq",
+    "description": "Simple, efficient background processing for Ruby",
+    "language": "Ruby",
+    "stargazers_count": 13000,
+    "owner_login": "sidekiq"
+  },
+  {
+    "full_name": "sqlalchemy/sqlalchemy",
+    "name": "sqlalchemy",
+    "github_id": 234567,
+    "node_id": "MDEwOlJlcG9zaXRvcnkyMzQ1Njc=",
+    "html_url": "https://github.com/sqlalchemy/sqlalchemy",
+    "description": "The Database Toolkit for Python",
+    "language": "Python",
+    "stargazers_count": 9000,
+    "owner_login": "sqlalchemy"
+  },
+  {
+    "full_name": "test/repo-without-analyses",
+    "name": "repo-without-analyses",
+    "github_id": 345678,
+    "node_id": "MDEwOlJlcG9zaXRvcnkzNDU2Nzg=",
+    "html_url": "https://github.com/test/repo-without-analyses",
+    "description": "Test repository with no analyses",
+    "language": "Ruby",
+    "stargazers_count": 100,
+    "forks_count": 10,
+    "open_issues_count": 5,
+    "owner_login": "test"
+  }
+]

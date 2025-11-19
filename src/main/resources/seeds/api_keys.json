@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Test API Key One",
+    "key_digest": "$2a$12$K8T5nBxL9mYz6pQr3wV7Ou7JxHZ2nM5kL8pW9qR4tY6vX3cZ1aB2e",
+    "last_used_at": "2025-11-15T10:00:00Z",
+    "request_count": 42,
+    "revoked_at": null,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "name": "Test API Key Two",
+    "key_digest": "$2a$12$A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6a7",
+    "last_used_at": "2025-11-15T10:00:00Z",
+    "request_count": 15,
+    "revoked_at": null,
+    "user_email": "another@example.com"
+  },
+  {
+    "name": "Revoked API Key",
+    "key_digest": "$2a$12$Z9Y8X7W6V5U4T3S2R1Q0P9O8N7M6L5K4J3I2H1G0F9E8D7C6B5A4b3",
+    "last_used_at": "2025-11-15T10:00:00Z",
+    "request_count": 100,
+    "revoked_at": "2025-11-18T10:00:00Z",
+    "user_email": "testuser@example.com"
+  }
+]

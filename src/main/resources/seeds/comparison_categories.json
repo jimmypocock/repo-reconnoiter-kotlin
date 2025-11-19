@@ -1,0 +1,87 @@
+[
+  {
+    "comparison_user_query": "Rails background job library with retry logic",
+    "category_slug": "ruby",
+    "confidence_score": 0.95
+  },
+  {
+    "comparison_user_query": "Rails background job library with retry logic",
+    "category_slug": "rails",
+    "confidence_score": 0.90
+  },
+  {
+    "comparison_user_query": "Python ORM for PostgreSQL",
+    "category_slug": "python",
+    "confidence_score": 0.98
+  },
+  {
+    "comparison_user_query": "JavaScript testing framework",
+    "category_slug": "javascript",
+    "confidence_score": 0.95
+  },
+  {
+    "comparison_user_query": "JavaScript testing framework",
+    "category_slug": "testing",
+    "confidence_score": 0.90
+  },
+  {
+    "comparison_user_query": "React state management",
+    "category_slug": "react",
+    "confidence_score": 0.95
+  },
+  {
+    "comparison_user_query": "React state management",
+    "category_slug": "javascript",
+    "confidence_score": 0.85
+  },
+  {
+    "comparison_user_query": "nodejs web framework",
+    "category_slug": "javascript",
+    "confidence_score": 0.90
+  },
+  {
+    "comparison_user_query": "nodejs web framework",
+    "category_slug": "web-framework",
+    "confidence_score": 0.95
+  },
+  {
+    "comparison_user_query": "Go HTTP router",
+    "category_slug": "go",
+    "confidence_score": 0.95
+  },
+  {
+    "comparison_user_query": "Go HTTP router",
+    "category_slug": "web-framework",
+    "confidence_score": 0.85
+  },
+  {
+    "comparison_user_query": "Python web scraping",
+    "category_slug": "python",
+    "confidence_score": 0.95
+  },
+  {
+    "comparison_user_query": "GraphQL client for React",
+    "category_slug": "react",
+    "confidence_score": 0.90
+  },
+  {
+    "comparison_user_query": "GraphQL client for React",
+    "category_slug": "graphql",
+    "confidence_score": 0.95
+  },
+  {
+    "comparison_user_query": "GraphQL client for React",
+    "category_slug": "javascript",
+    "confidence_score": 0.85
+  },
+  {
+    "comparison_user_query": "Machine learning framework Python",
+    "category_slug": "python",
+    "confidence_score": 0.95
+  },
+  {
+    "comparison_user_query": "Machine learning framework Python",
+    "category_slug": "machine-learning",
+    "confidence_score": 0.98
+  }
+]

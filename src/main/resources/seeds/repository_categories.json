@@ -1,0 +1,26 @@
+[
+  {
+    "repository_full_name": "sidekiq/sidekiq",
+    "category_slug": "ruby",
+    "confidence_score": 0.95,
+    "assigned_by": "seed"
+  },
+  {
+    "repository_full_name": "sidekiq/sidekiq",
+    "category_slug": "rails",
+    "confidence_score": 0.90,
+    "assigned_by": "seed"
+  },
+  {
+    "repository_full_name": "sqlalchemy/sqlalchemy",
+    "category_slug": "python",
+    "confidence_score": 0.98,
+    "assigned_by": "seed"
+  },
+  {
+    "repository_full_name": "test/repo-without-analyses",
+    "category_slug": "ruby",
+    "confidence_score": 0.85,
+    "assigned_by": "seed"
+  }
+]

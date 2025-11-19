@@ -22,6 +22,27 @@ services:
     networks:
       - reconnoiter-network
 
+  # phpMyAdmin - Database administration tool (dev only)
+  # Start with: docker-compose --profile tools up
+  # Access at: http://localhost:8081
+  phpmyadmin:
+    profiles: [ "tools" ]
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: reconnoiter-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${DATABASE_USERNAME:-reconnoiter}
+      PMA_PASSWORD: ${DATABASE_PASSWORD:-devpassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+    ports:
+      - "8081:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - reconnoiter-network
+
   app:
     build:
       context: .

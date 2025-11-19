@@ -15,12 +15,13 @@ class DbSeedRunner(private val databaseSeeder: DatabaseSeeder) : CommandLineRunn
             println("\n🌱 Seeding database...")
             println("━".repeat(80))
 
-            val (createdCount, skippedCount) = databaseSeeder.seedCategories()
+            val stats = databaseSeeder.seedAll()
 
             println("━".repeat(80))
             println("✅ Seeding complete!")
-            println("   Created: $createdCount categories")
-            println("   Skipped: $skippedCount categories (already existed)")
+            stats.forEach { (table, count) ->
+                println("   $table: $count records")
+            }
             println()
 
             exitProcess(0)

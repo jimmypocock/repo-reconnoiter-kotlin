@@ -20,5 +20,7 @@ CREATE TABLE users (
 
     UNIQUE KEY idx_email (email),
     UNIQUE KEY idx_github_id (github_id),
-    UNIQUE KEY idx_provider_uid (provider, uid)
+    UNIQUE KEY idx_provider_uid (provider, uid),
+    KEY idx_whitelisted_user_id (whitelisted_user_id),
+    CONSTRAINT fk_users_whitelisted_user FOREIGN KEY (whitelisted_user_id) REFERENCES whitelisted_users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
