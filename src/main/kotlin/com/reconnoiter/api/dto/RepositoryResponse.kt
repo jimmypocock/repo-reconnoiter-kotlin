@@ -52,17 +52,13 @@ data class RepositoryResponse(
         }
 
         private fun parseTopics(topicsJson: String): List<String> {
-            return try {
-                // Simple JSON array parsing - will improve with Jackson later
-                topicsJson
-                    .trim()
-                    .removeSurrounding("[", "]")
-                    .split(",")
-                    .map { it.trim().removeSurrounding("\"") }
-                    .filter { it.isNotEmpty() }
-            } catch (e: Exception) {
-                emptyList()
-            }
+            // Simple JSON array parsing - will improve with Jackson later
+            return topicsJson
+                .trim()
+                .removeSurrounding("[", "]")
+                .split(",")
+                .map { it.trim().removeSurrounding("\"") }
+                .filter { it.isNotEmpty() }
         }
     }
 }

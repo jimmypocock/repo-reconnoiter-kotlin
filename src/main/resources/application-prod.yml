@@ -112,6 +112,19 @@ jwt:
   secret: ${JWT_SECRET}  # Required - set via Secrets Manager
   expiration: 86400000  # 24 hours
 
+# Sentry Error Tracking Configuration (ENABLED in production)
+sentry:
+  dsn: ${SENTRY_DSN}  # Required - get from Sentry dashboard
+  environment: production
+  traces-sample-rate: 0.1  # Sample 10% of transactions (reduces overhead)
+  send-default-pii: false  # Don't send PII (GDPR/privacy compliance)
+  attach-stacktrace: true  # Include stack traces
+  enable-tracing: true  # Performance monitoring
+  # Exception filtering (optional - ignore known non-critical errors)
+  ignored-exceptions-for-type:
+    - org.springframework.security.access.AccessDeniedException
+    - org.springframework.security.authentication.BadCredentialsException
+
 # Custom application properties
 reconnoiter:
   # Rate limiting (if needed)

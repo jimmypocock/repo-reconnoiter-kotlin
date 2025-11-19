@@ -61,18 +61,13 @@ data class ComparisonResponse(
         }
 
         private fun parseJsonArray(jsonArray: String?): List<String> {
-            return try {
-                // Simple JSON array parsing - will improve with Jackson later
-                jsonArray
-                    ?.trim()
-                    ?.removeSurrounding("[", "]")
-                    ?.split(",")
-                    ?.map { it.trim().removeSurrounding("\"") }
-                    ?.filter { it.isNotEmpty() }
-                    ?: emptyList()
-            } catch (e: Exception) {
-                emptyList()
-            }
+            return jsonArray
+                ?.trim()
+                ?.removeSurrounding("[", "]")
+                ?.split(",")
+                ?.map { it.trim().removeSurrounding("\"") }
+                ?.filter { it.isNotEmpty() }
+                ?: emptyList()
         }
     }
 }
@@ -142,17 +137,13 @@ data class ComparisonDetailResponse(
         }
 
         private fun parseJsonArray(jsonArray: String?): List<String> {
-            return try {
-                jsonArray
-                    ?.trim()
-                    ?.removeSurrounding("[", "]")
-                    ?.split(",")
-                    ?.map { it.trim().removeSurrounding("\"") }
-                    ?.filter { it.isNotEmpty() }
-                    ?: emptyList()
-            } catch (e: Exception) {
-                emptyList()
-            }
+            return jsonArray
+                ?.trim()
+                ?.removeSurrounding("[", "]")
+                ?.split(",")
+                ?.map { it.trim().removeSurrounding("\"") }
+                ?.filter { it.isNotEmpty() }
+                ?: emptyList()
         }
     }
 }

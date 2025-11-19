@@ -1,5 +1,7 @@
 package com.reconnoiter.api.controller
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+
 import com.reconnoiter.api.dto.ComparisonDetailResponse
 import com.reconnoiter.api.dto.ComparisonResponse
 import com.reconnoiter.api.dto.PagedResponse
@@ -16,6 +18,7 @@ import java.time.LocalDateTime
  *   GET /comparisons - List comparisons with filtering, search, pagination
  *   GET /comparisons/:id - Show single comparison
  */
+@ConditionalOnWebApplication
 @RestController
 @RequestMapping("/comparisons")
 class ComparisonsController(

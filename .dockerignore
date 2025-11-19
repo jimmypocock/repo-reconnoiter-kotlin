@@ -9,13 +9,12 @@ build/
 target/
 bin/
 out/
-*.jar
 *.war
 *.class
+# Note: *.jar excluded EXCEPT gradle-wrapper.jar (needed for builds)
 
-# Gradle
+# Gradle (but keep gradle/wrapper/gradle-wrapper.jar)
 .gradle/
-gradle/wrapper/gradle-wrapper.jar
 
 # IDE files
 .idea/
@@ -62,6 +61,10 @@ src/test/
 .env
 .env.*
 !.env.example
+
+# Sentry configuration (will be created via build arg)
+sentry.properties
+sentry.properties.example
 
 # AWS and deployment files
 cdk/

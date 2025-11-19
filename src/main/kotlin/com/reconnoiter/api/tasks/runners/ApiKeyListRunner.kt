@@ -1,6 +1,6 @@
 package com.reconnoiter.api.tasks.runners
 
-import com.reconnoiter.api.repository.ApiKeyRepository
+import com.reconnoiter.api.service.ApiKeyService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
@@ -9,11 +9,11 @@ import kotlin.system.exitProcess
 
 @Component
 @Profile("apiKeyList")
-class ApiKeyListRunner(private val apiKeyRepository: ApiKeyRepository) : CommandLineRunner {
+class ApiKeyListRunner(private val apiKeyService: ApiKeyService) : CommandLineRunner {
 
     override fun run(vararg args: String) {
         try {
-            val apiKeys = apiKeyRepository.findByRevokedAtIsNull()
+            val apiKeys = apiKeyService.listActiveKeys()
 
             if (apiKeys.isEmpty()) {
                 println("\nNo API keys found.")

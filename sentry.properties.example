@@ -1,0 +1,12 @@
+# Sentry Configuration Example (LOCAL DEVELOPMENT ONLY)
+# Copy this file to sentry.properties and fill in your actual values
+# sentry.properties is gitignored and will not be committed
+#
+# NOTE: This file is only used for LOCAL Gradle builds (./gradlew bootJar)
+#       Docker builds use SENTRY_AUTH_TOKEN from .env instead (more secure)
+
+# Auth Token - Get from: https://sentry.io/settings/account/api/auth-tokens/
+# Required permissions: project:releases, project:write
+# Used at BUILD TIME to upload source code for better stack traces
+# Note: Token contains URL/org/project info, so no need to specify separately
+auth.token=YOUR_SENTRY_AUTH_TOKEN_HERE

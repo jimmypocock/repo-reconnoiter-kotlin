@@ -1,5 +1,7 @@
 package com.reconnoiter.api.controller
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
  * Returns available endpoints and API information
  * Root endpoint is public (no auth required)
  */
+@ConditionalOnWebApplication
 @RestController
 @RequestMapping("/")
 class RootController {

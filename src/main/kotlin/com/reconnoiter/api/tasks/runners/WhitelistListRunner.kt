@@ -1,6 +1,6 @@
 package com.reconnoiter.api.tasks.runners
 
-import com.reconnoiter.api.repository.WhitelistedUserRepository
+import com.reconnoiter.api.service.WhitelistService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
@@ -9,11 +9,11 @@ import kotlin.system.exitProcess
 
 @Component
 @Profile("whitelistList")
-class WhitelistListRunner(private val whitelistedUserRepository: WhitelistedUserRepository) : CommandLineRunner {
+class WhitelistListRunner(private val whitelistService: WhitelistService) : CommandLineRunner {
 
     override fun run(vararg args: String) {
         try {
-            val users = whitelistedUserRepository.findAllByOrderByCreatedAtDesc()
+            val users = whitelistService.listAll()
 
             if (users.isEmpty()) {
                 println("\nNo whitelisted users found.")

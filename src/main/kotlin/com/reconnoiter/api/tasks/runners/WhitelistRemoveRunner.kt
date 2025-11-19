@@ -1,6 +1,6 @@
 package com.reconnoiter.api.tasks.runners
 
-import com.reconnoiter.api.repository.WhitelistedUserRepository
+import com.reconnoiter.api.service.WhitelistService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
@@ -8,17 +8,14 @@ import kotlin.system.exitProcess
 
 @Component
 @Profile("whitelistRemove")
-class WhitelistRemoveRunner(private val whitelistedUserRepository: WhitelistedUserRepository) : CommandLineRunner {
+class WhitelistRemoveRunner(private val whitelistService: WhitelistService) : CommandLineRunner {
 
     override fun run(vararg args: String) {
         try {
             val githubUsername = args.getOrNull(0)
                 ?: throw IllegalArgumentException("GitHub username is required. Usage: ./gradlew whitelistRemove -Pusername=octocat")
 
-            val user = whitelistedUserRepository.findByGithubUsername(githubUsername)
-                ?: throw IllegalArgumentException("User '$githubUsername' not found in whitelist")
-
-            whitelistedUserRepository.delete(user)
+            val user = whitelistService.removeUser(githubUsername)
 
             println("\n✅ User removed from whitelist successfully!")
             println("━".repeat(80))
@@ -30,6 +27,9 @@ class WhitelistRemoveRunner(private val whitelistedUserRepository: WhitelistedUs
             println()
 
             exitProcess(0)
+        } catch (e: WhitelistService.UserNotFoundException) {
+            System.err.println("\n❌ Error: ${e.message}")
+            exitProcess(1)
         } catch (e: IllegalArgumentException) {
             System.err.println("\n❌ Error: ${e.message}")
             exitProcess(1)

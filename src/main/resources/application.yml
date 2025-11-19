@@ -66,3 +66,20 @@ management:
 jwt:
   secret: ${JWT_SECRET}  # Required - no default
   expiration: 86400000 # 24 hours in milliseconds
+
+# Application Configuration
+app:
+  frontend:
+    # Next.js frontend URL for CORS and OAuth redirects (no trailing slash)
+    # Required - no default (must be set in .env or environment)
+    url: ${APP_FRONTEND_URL}
+
+# Sentry Error Tracking Configuration
+# DSN configured per-profile (disabled in dev, enabled in prod)
+sentry:
+  dsn: ${SENTRY_DSN:}  # Empty default = disabled
+  environment: ${SPRING_PROFILES_ACTIVE:dev}
+  traces-sample-rate: 1.0  # Override in prod profile
+  send-default-pii: false  # Don't send personally identifiable information
+  attach-stacktrace: true  # Include stack traces in breadcrumbs
+  enable-tracing: true  # Performance monitoring

@@ -1,14 +1,14 @@
 package com.reconnoiter.api.service
 
-import com.reconnoiter.api.entity.ApiKey
-import com.reconnoiter.api.entity.User
-import com.reconnoiter.api.repository.ApiKeyRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Base64
+import com.reconnoiter.api.entity.ApiKey
+import com.reconnoiter.api.entity.User
+import com.reconnoiter.api.repository.ApiKeyRepository
 
 @Service
 class ApiKeyService(
@@ -29,6 +29,17 @@ class ApiKeyService(
     //--------------------------------------
     // PUBLIC INSTANCE METHODS
     //--------------------------------------
+
+    /**
+     * Clean up old revoked keys (older than 90 days)
+     */
+    @Transactional
+    fun cleanupOldRevokedKeys(daysOld: Int = 90): Int {
+        val cutoffDate = LocalDateTime.now().minusDays(daysOld.toLong())
+        val oldKeys = apiKeyRepository.findByRevokedAtBefore(cutoffDate)
+        apiKeyRepository.deleteAll(oldKeys)
+        return oldKeys.size
+    }
 
     /**
      * Generate a new API key for a user or system-wide
@@ -52,6 +63,56 @@ class ApiKeyService(
 
         val savedKey = apiKeyRepository.save(apiKey)
         return Pair(rawKey, savedKey)
+    }
+
+    /**
+     * Get API key statistics
+     * Returns a map with total, active, and revoked counts
+     */
+    fun getStats(): Map<String, Long> {
+        val total = apiKeyRepository.count()
+        val active = apiKeyRepository.findByRevokedAtIsNull().size.toLong()
+        val revoked = total - active
+
+        return mapOf(
+            "total" to total,
+            "active" to active,
+            "revoked" to revoked
+        )
+    }
+
+    /**
+     * List all active API keys
+     */
+    fun listActiveKeys(): List<ApiKey> {
+        return apiKeyRepository.findByRevokedAtIsNull()
+    }
+
+    /**
+     * List all API keys for a specific user
+     */
+    fun listUserKeys(userId: Long, includeRevoked: Boolean = false): List<ApiKey> {
+        return if (includeRevoked) {
+            apiKeyRepository.findByUserId(userId)
+        } else {
+            apiKeyRepository.findByUserIdAndRevokedAtIsNull(userId)
+        }
+    }
+
+    /**
+     * Revoke an API key by ID
+     */
+    @Transactional
+    fun revokeApiKey(id: Long): Boolean {
+        val apiKey = apiKeyRepository.findById(id).orElse(null) ?: return false
+
+        if (apiKey.revokedAt != null) {
+            return false // Already revoked
+        }
+
+        val revoked = apiKey.copy(revokedAt = LocalDateTime.now())
+        apiKeyRepository.save(revoked)
+        return true
     }
 
     /**
@@ -83,51 +144,6 @@ class ApiKeyService(
         }
 
         return null
-    }
-
-    /**
-     * Revoke an API key by ID
-     */
-    @Transactional
-    fun revokeApiKey(id: Long): Boolean {
-        val apiKey = apiKeyRepository.findById(id).orElse(null) ?: return false
-
-        if (apiKey.revokedAt != null) {
-            return false // Already revoked
-        }
-
-        val revoked = apiKey.copy(revokedAt = LocalDateTime.now())
-        apiKeyRepository.save(revoked)
-        return true
-    }
-
-    /**
-     * List all active API keys
-     */
-    fun listActiveKeys(): List<ApiKey> {
-        return apiKeyRepository.findByRevokedAtIsNull()
-    }
-
-    /**
-     * List all API keys for a specific user
-     */
-    fun listUserKeys(userId: Long, includeRevoked: Boolean = false): List<ApiKey> {
-        return if (includeRevoked) {
-            apiKeyRepository.findByUserId(userId)
-        } else {
-            apiKeyRepository.findByUserIdAndRevokedAtIsNull(userId)
-        }
-    }
-
-    /**
-     * Clean up old revoked keys (older than 90 days)
-     */
-    @Transactional
-    fun cleanupOldRevokedKeys(daysOld: Int = 90): Int {
-        val cutoffDate = LocalDateTime.now().minusDays(daysOld.toLong())
-        val oldKeys = apiKeyRepository.findByRevokedAtBefore(cutoffDate)
-        apiKeyRepository.deleteAll(oldKeys)
-        return oldKeys.size
     }
 
     //--------------------------------------

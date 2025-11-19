@@ -1,7 +1,6 @@
 package com.reconnoiter.api.tasks.runners
 
-import com.reconnoiter.api.entity.WhitelistedUser
-import com.reconnoiter.api.repository.WhitelistedUserRepository
+import com.reconnoiter.api.service.WhitelistService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
@@ -9,7 +8,7 @@ import kotlin.system.exitProcess
 
 @Component
 @Profile("whitelistAdd")
-class WhitelistAddRunner(private val whitelistedUserRepository: WhitelistedUserRepository) : CommandLineRunner {
+class WhitelistAddRunner(private val whitelistService: WhitelistService) : CommandLineRunner {
 
     override fun run(vararg args: String) {
         try {
@@ -25,21 +24,13 @@ class WhitelistAddRunner(private val whitelistedUserRepository: WhitelistedUserR
             val email = args.getOrNull(2)
             val notes = args.getOrNull(3)
 
-            // Check if already whitelisted
-            if (whitelistedUserRepository.existsByGithubId(githubId)) {
-                println("\n⚠️  User with GitHub ID $githubId is already whitelisted.")
+            val saved = try {
+                whitelistService.addUser(githubId, githubUsername, email, notes)
+            } catch (e: WhitelistService.AlreadyWhitelistedException) {
+                println("\n⚠️  ${e.message}")
                 println()
                 exitProcess(0)
             }
-
-            val whitelistedUser = WhitelistedUser(
-                githubId = githubId,
-                githubUsername = githubUsername,
-                email = email,
-                notes = notes
-            )
-
-            val saved = whitelistedUserRepository.save(whitelistedUser)
 
             println("\n✅ User added to whitelist successfully!")
             println("━".repeat(80))

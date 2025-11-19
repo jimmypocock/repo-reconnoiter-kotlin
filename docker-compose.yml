@@ -1,15 +1,15 @@
 # Docker Compose for local development
-# Provides MySQL database for the Kotlin API
+# Provides MySQL database + Kotlin/Spring Boot API
 
 services:
   mysql:
     image: mysql:8.0
     container_name: reconnoiter-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: reconnoiter_dev
-      MYSQL_USER: reconnoiter
-      MYSQL_PASSWORD: devpassword
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-reconnoiter_dev}
+      MYSQL_USER: ${DATABASE_USERNAME:-reconnoiter}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-devpassword}
     ports:
       - "3306:3306"
     volumes:
@@ -19,6 +19,45 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - reconnoiter-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
+    container_name: reconnoiter-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Database connection (uses mysql service name for Docker internal DNS)
+      DATABASE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-reconnoiter_dev}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      # Other environment variables from .env
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SENTRY_DSN: ${SENTRY_DSN}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      APP_FRONTEND_URL: ${APP_FRONTEND_URL:-http://localhost:3000}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - reconnoiter-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      start_period: 60s
+      retries: 3
+
+networks:
+  reconnoiter-network:
+    driver: bridge
 
 volumes:
   mysql_data:

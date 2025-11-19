@@ -1,5 +1,7 @@
 package com.reconnoiter.api.controller
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+
 import com.reconnoiter.api.service.AuthExchangeResult
 import com.reconnoiter.api.service.AuthService
 import org.springframework.http.ResponseEntity
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
  * Endpoints:
  *   POST /auth/exchange - Exchange GitHub OAuth token for JWT
  */
+@ConditionalOnWebApplication
 @RestController
 @RequestMapping("/auth")
 class AuthController(

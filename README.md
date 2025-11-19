@@ -81,15 +81,23 @@ The application supports environment-specific configurations:
 
 - **`dev`** (default): Verbose logging, SQL queries visible, safe dev defaults
 - **`prod`**: Minimal logging, requires all env vars to be set explicitly
+- **`console`**: No web server, database-only mode (for Gradle tasks and Shell)
 
-**Development** (default):
+**Development** (default - web mode):
 ```bash
 ./gradlew bootRun  # Uses application-dev.yml
 ```
 
-**Production**:
+**Production** (web mode):
 ```bash
 SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun  # Uses application-prod.yml
+```
+
+**Console mode** (database tasks, no web server):
+```bash
+# Automatically used by Gradle tasks (apiKeyList, shell, etc.)
+# Profile: dev,console
+# No Tomcat, no port 8080 conflict, database access only
 ```
 
 ### Testing & Building
@@ -107,19 +115,51 @@ SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun  # Uses application-prod.yml
 
 ### Database Management
 
+#### Starting/Stopping Database
+
 ```bash
 # Start database
 docker-compose up -d
 
 # Stop database
 docker-compose down
+```
 
-# View database (interactive)
+#### Accessing Database
+
+**Option 1: MySQL CLI with config file (recommended)**
+```bash
+# One-time setup: Create mysql.cnf from example
+cp mysql.cnf.example mysql.cnf
+# Edit mysql.cnf if needed (default settings work for local dev)
+
+# Connect to database (no password needed with config file)
+mysql --defaults-file=mysql.cnf
+
+# Or run quick queries
+mysql --defaults-file=mysql.cnf -e "SHOW TABLES;"
+mysql --defaults-file=mysql.cnf -e "SELECT * FROM users;"
+```
+
+**Option 2: Docker exec**
+```bash
+# Interactive MySQL shell
 docker-compose exec mysql mysql -u reconnoiter -pdevpassword reconnoiter_dev
 
-# Check database tables
+# Quick query
 docker-compose exec mysql mysql -u reconnoiter -pdevpassword reconnoiter_dev -e "SHOW TABLES;"
+```
 
+**Option 3: GUI tool (TablePlus, DBeaver, etc.)**
+- Host: `127.0.0.1`
+- Port: `3306`
+- Database: `reconnoiter_dev`
+- Username: `reconnoiter`
+- Password: `devpassword`
+
+#### Database Tasks
+
+```bash
 # Seed database with test data
 ./gradlew dbSeed
 ```
@@ -169,6 +209,48 @@ docker-compose exec mysql mysql -u reconnoiter -pdevpassword reconnoiter_dev -e 
 ./gradlew dbSeed
 ```
 
+#### Interactive Shell (Rails Console-style)
+```bash
+# Launch interactive Spring Shell (like `rails console`)
+./gradlew shell
+
+# Then run commands interactively:
+shell:> help                    # Show available commands
+shell:> exit                    # Exit shell
+```
+
+**Available Shell Commands:**
+
+**API Key Commands:**
+```bash
+shell:> apikey list             # List all active API keys
+shell:> apikeys                 # Shorthand for apikey list
+shell:> apikey generate <name>  # Generate new API key
+shell:> apikey generate <name> --email user@example.com  # Generate for specific user
+shell:> apikey revoke <id>      # Revoke an API key by ID
+shell:> apikey stats            # Show API key statistics
+```
+
+**Whitelist Commands:**
+```bash
+shell:> whitelist list          # List all whitelisted users
+shell:> whitelisted             # Shorthand for whitelist list
+shell:> whitelist add <githubId> <username> [--email <email>] [--notes <notes>]
+shell:> whitelist remove <username>
+shell:> whitelist check <githubId>  # Check if GitHub ID is whitelisted
+```
+
+**Other Commands:**
+```bash
+shell:> help                    # Show all available commands
+shell:> history                 # Show command history
+shell:> clear                   # Clear screen
+shell:> exit                    # Exit shell
+```
+
+**Note:** Spring Shell loads the full application context (~37 seconds startup).
+For quick one-off commands, use Gradle tasks above instead.
+
 #### Other Useful Tasks
 ```bash
 # Display project info
@@ -178,6 +260,7 @@ docker-compose exec mysql mysql -u reconnoiter -pdevpassword reconnoiter_dev -e 
 ./gradlew tasks --group api_keys
 ./gradlew tasks --group whitelist
 ./gradlew tasks --group database
+./gradlew tasks --group application  # Includes 'shell' task
 ```
 
 ## Project Structure
@@ -186,21 +269,44 @@ docker-compose exec mysql mysql -u reconnoiter -pdevpassword reconnoiter_dev -e 
 src/
 ├── main/
 │   ├── kotlin/com/reconnoiter/api/
-│   │   ├── controller/     # REST controllers
-│   │   ├── model/          # JPA entities
-│   │   ├── repository/     # Data repositories
-│   │   ├── service/        # Business logic
+│   │   ├── controller/     # REST controllers (@ConditionalOnWebApplication)
+│   │   ├── entity/         # JPA entities (always loaded)
+│   │   ├── repository/     # Data repositories (always loaded)
+│   │   ├── service/        # Business logic services (always loaded)
+│   │   │   ├── ApiKeyService.kt      # API key management
+│   │   │   ├── WhitelistService.kt   # Whitelist management
+│   │   │   ├── DatabaseSeeder.kt     # Database seeding
+│   │   │   ├── AuthService.kt        # Authentication
+│   │   │   └── GitHubService.kt      # GitHub API wrapper
+│   │   ├── shell/commands/ # Spring Shell commands (interactive console)
+│   │   │   ├── ApiKeyCommands.kt     # Shell: apikey list, generate, etc.
+│   │   │   ├── WhitelistCommands.kt  # Shell: whitelist add, remove, etc.
+│   │   │   ├── CategoryCommands.kt   # Shell: category commands
+│   │   │   ├── RepositoryCommands.kt # Shell: repository commands
+│   │   │   └── UserCommands.kt       # Shell: user commands
+│   │   ├── tasks/runners/  # Gradle task runners (one-off commands)
+│   │   │   ├── ApiKeyListRunner.kt   # Gradle: apiKeyList
+│   │   │   ├── ApiKeyGenerateRunner.kt
+│   │   │   ├── WhitelistAddRunner.kt
+│   │   │   └── DbSeedRunner.kt
 │   │   ├── security/       # Auth filters & JWT
 │   │   ├── config/         # Spring configuration
-│   │   └── tasks/          # Gradle task scripts
+│   │   └── dto/            # Data Transfer Objects
 │   └── resources/
-│       ├── db/migration/   # Flyway SQL migrations
-│       ├── application.yml # Base configuration
-│       ├── application-dev.yml   # Dev profile config
-│       └── application-prod.yml  # Production config
+│       ├── db/migration/            # Flyway SQL migrations
+│       ├── application.yml          # Base configuration
+│       ├── application-dev.yml      # Dev profile (web mode)
+│       ├── application-prod.yml     # Prod profile (web mode)
+│       └── application-console.yml  # Console profile (no web server)
 └── test/
     └── kotlin/             # Tests (JUnit 5)
 ```
+
+**Architecture Pattern:**
+- **Service Layer**: Business logic (ApiKeyService, WhitelistService, etc.)
+- **Shell Commands**: Interactive console (calls services)
+- **Task Runners**: One-off Gradle tasks (calls services)
+- **No Code Duplication**: Both shell and tasks use the same services
 
 ## API Endpoints
 

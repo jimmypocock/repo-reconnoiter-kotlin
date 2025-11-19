@@ -1,5 +1,7 @@
 package com.reconnoiter.api.controller
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+
 import com.reconnoiter.api.dto.PagedResponse
 import com.reconnoiter.api.dto.RepositoryResponse
 import com.reconnoiter.api.repository.RepositoryRepository
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@ConditionalOnWebApplication
 @RestController
 @RequestMapping("/repositories")
 class RepositoryController(

@@ -1,6 +1,5 @@
 package com.reconnoiter.api.shell.commands
 
-import com.reconnoiter.api.repository.ApiKeyRepository
 import com.reconnoiter.api.repository.UserRepository
 import com.reconnoiter.api.service.ApiKeyService
 import org.springframework.shell.standard.ShellComponent
@@ -10,14 +9,13 @@ import java.time.format.DateTimeFormatter
 
 @ShellComponent
 class ApiKeyCommands(
-    private val apiKeyRepository: ApiKeyRepository,
     private val apiKeyService: ApiKeyService,
     private val userRepository: UserRepository
 ) {
 
     @ShellMethod(key = ["apikey list", "apikeys"], value = "List all active API keys")
     fun listApiKeys(): String {
-        val apiKeys = apiKeyRepository.findByRevokedAtIsNull()
+        val apiKeys = apiKeyService.listActiveKeys()
 
         if (apiKeys.isEmpty()) {
             return "\nNo active API keys found.\n\nGenerate a new key with: apikey generate <name>"
@@ -97,17 +95,15 @@ class ApiKeyCommands(
 
     @ShellMethod(key = ["apikey stats"], value = "Show API key usage statistics")
     fun showStats(): String {
-        val total = apiKeyRepository.count()
-        val active = apiKeyRepository.findByRevokedAtIsNull().size
-        val revoked = total - active
+        val stats = apiKeyService.getStats()
 
         val output = StringBuilder()
         output.appendLine()
         output.appendLine("📊 API Key Statistics")
         output.appendLine("━".repeat(40))
-        output.appendLine("Total keys:    $total")
-        output.appendLine("Active keys:   $active")
-        output.appendLine("Revoked keys:  $revoked")
+        output.appendLine("Total keys:    ${stats["total"]}")
+        output.appendLine("Active keys:   ${stats["active"]}")
+        output.appendLine("Revoked keys:  ${stats["revoked"]}")
         output.appendLine("━".repeat(40))
 
         return output.toString()

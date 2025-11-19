@@ -44,6 +44,15 @@ out/
 .env
 .env.local
 
+### Sentry Configuration ###
+sentry.properties
+
+### MySQL Configuration ###
+mysql.cnf
+
 ### Temporary Files ###
 tmp/
 *.log
+
+### Notes / Personal Files
+NOTES.txt

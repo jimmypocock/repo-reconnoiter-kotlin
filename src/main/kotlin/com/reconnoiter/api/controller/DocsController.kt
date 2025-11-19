@@ -1,5 +1,7 @@
 package com.reconnoiter.api.controller
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import org.springframework.core.io.ClassPathResource
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
  * Serves OpenAPI specification in multiple formats
  * Documentation is public (no auth required)
  */
+@ConditionalOnWebApplication
 @RestController
 @RequestMapping("")
 class DocsController {

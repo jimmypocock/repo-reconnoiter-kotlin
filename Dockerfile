@@ -19,6 +19,15 @@ COPY gradle.properties .
 COPY settings.gradle.kts .
 COPY build.gradle.kts .
 
+# Accept Sentry auth token as build arg (not committed to image)
+ARG SENTRY_AUTH_TOKEN
+RUN if [ -n "$SENTRY_AUTH_TOKEN" ]; then \
+        echo "auth.token=${SENTRY_AUTH_TOKEN}" > sentry.properties; \
+    else \
+        echo "Warning: SENTRY_AUTH_TOKEN not provided - source uploads will be skipped" >&2; \
+        touch sentry.properties; \
+    fi
+
 # Download dependencies (cached layer unless dependencies change)
 RUN ./gradlew dependencies --no-daemon
 
@@ -39,9 +48,9 @@ RUN mkdir -p build/dependency && \
 # ============================================
 FROM eclipse-temurin:21-jre-jammy
 
-# Install dumb-init for proper signal handling
+# Install dumb-init for proper signal handling + curl for health checks
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends dumb-init && \
+    apt-get install -y --no-install-recommends dumb-init curl && \
     rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security

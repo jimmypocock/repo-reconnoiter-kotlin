@@ -4,6 +4,9 @@ plugins {
 	id("org.springframework.boot") version "3.5.7"
 	id("io.spring.dependency-management") version "1.1.7"
 	kotlin("plugin.jpa") version "2.2.21"
+	id("io.sentry.jvm.gradle") version "5.12.2"
+	// Temporarily disabled - will re-add after fixing code quality
+	// id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
 
 group = "com.reconnoiter"
@@ -39,6 +42,9 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+
+	// Sentry error tracking (production only - disabled in dev)
+	implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.22.0")
 
 	// Spring Shell (interactive console like Rails console)
 	implementation("org.springframework.shell:spring-shell-starter:3.3.3")
@@ -92,6 +98,49 @@ tasks.register("version") {
 	}
 }
 
+// Helper function to read .env file manually (fallback when plugin not available)
+fun getEnvOrDefault(key: String, default: String = ""): String {
+	val envFile = project.file(".env")
+	if (envFile.exists()) {
+		envFile.readLines().forEach { line ->
+			val parts = line.split("=", limit = 2)
+			if (parts.size == 2 && parts[0].trim() == key) {
+				return parts[1].trim()
+			}
+		}
+	}
+	return default
+}
+
+// Configure bootRun to load environment variables from .env (local dev only)
+// Skip during Docker builds (.env not available - env vars passed via docker-compose)
+if (project.file(".env").exists()) {
+	afterEvaluate {
+		tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+			environment("SENTRY_DSN", getEnvOrDefault("SENTRY_DSN"))
+			environment("DATABASE_URL", getEnvOrDefault("DATABASE_URL"))
+			environment("DATABASE_USERNAME", getEnvOrDefault("DATABASE_USERNAME"))
+			environment("DATABASE_PASSWORD", getEnvOrDefault("DATABASE_PASSWORD"))
+			environment("GITHUB_CLIENT_ID", getEnvOrDefault("GITHUB_CLIENT_ID"))
+			environment("GITHUB_CLIENT_SECRET", getEnvOrDefault("GITHUB_CLIENT_SECRET"))
+			environment("JWT_SECRET", getEnvOrDefault("JWT_SECRET"))
+			environment("APP_FRONTEND_URL", getEnvOrDefault("APP_FRONTEND_URL", "http://localhost:3000"))
+		}
+
+		// Configure all JavaExec tasks (shell, apiKeyList, etc.) to load environment variables
+		tasks.withType<JavaExec>().configureEach {
+			environment("SENTRY_DSN", getEnvOrDefault("SENTRY_DSN"))
+			environment("DATABASE_URL", getEnvOrDefault("DATABASE_URL"))
+			environment("DATABASE_USERNAME", getEnvOrDefault("DATABASE_USERNAME"))
+			environment("DATABASE_PASSWORD", getEnvOrDefault("DATABASE_PASSWORD"))
+			environment("GITHUB_CLIENT_ID", getEnvOrDefault("GITHUB_CLIENT_ID"))
+			environment("GITHUB_CLIENT_SECRET", getEnvOrDefault("GITHUB_CLIENT_SECRET"))
+			environment("JWT_SECRET", getEnvOrDefault("JWT_SECRET"))
+			environment("APP_FRONTEND_URL", getEnvOrDefault("APP_FRONTEND_URL", "http://localhost:3000"))
+		}
+	}
+}
+
 tasks.register("dev") {
 	group = "application"
 	description = "Run the application in development mode"
@@ -112,13 +161,45 @@ tasks.register("info") {
 	}
 }
 
+tasks.register("checkEnv") {
+	group = "help"
+	description = "Check if .env variables are loaded (local dev only)"
+	doLast {
+		println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+		println("🔍 Environment Variable Check")
+		println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+		if (project.file(".env").exists()) {
+			// Check DATABASE_URL
+			val dbUrl = getEnvOrDefault("DATABASE_URL")
+			if (dbUrl.isNotEmpty()) {
+				println("✅ DATABASE_URL: Found")
+			} else {
+				println("❌ DATABASE_URL: Not found in .env")
+			}
+
+			// Check SENTRY_DSN
+			val sentryDsn = getEnvOrDefault("SENTRY_DSN")
+			if (sentryDsn.isNotEmpty()) {
+				println("✅ SENTRY_DSN: Found")
+			} else {
+				println("ℹ️  SENTRY_DSN: Not set (optional in dev)")
+			}
+		} else {
+			println("⚠️  .env not available (using system environment)")
+		}
+
+		println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	}
+}
+
 // Database Tasks (like Rails rake tasks)
 tasks.register<JavaExec>("dbSeed") {
 	group = "database"
 	description = "Seed the database with initial data"
 	classpath = sourceSets["main"].runtimeClasspath
 	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev,dbSeed")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console,dbSeed")
 }
 
 // API Key Tasks (like Rails rake api_keys:*)
@@ -127,7 +208,7 @@ tasks.register<JavaExec>("apiKeyGenerate") {
 	description = "Generate a new API key. Usage: ./gradlew apiKeyGenerate -Pname='Key Name' [-Pemail='user@example.com']"
 	classpath = sourceSets["main"].runtimeClasspath
 	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev,apiKeyGenerate")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console,apiKeyGenerate")
 
 	// Pass properties as args
 	val keyName = project.findProperty("name")?.toString() ?: "default"
@@ -140,7 +221,7 @@ tasks.register<JavaExec>("apiKeyList") {
 	description = "List all API keys with usage stats"
 	classpath = sourceSets["main"].runtimeClasspath
 	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev,apiKeyList")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console,apiKeyList")
 }
 
 tasks.register<JavaExec>("apiKeyRevoke") {
@@ -148,10 +229,12 @@ tasks.register<JavaExec>("apiKeyRevoke") {
 	description = "Revoke an API key. Usage: ./gradlew apiKeyRevoke -Pid=123"
 	classpath = sourceSets["main"].runtimeClasspath
 	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev,apiKeyRevoke")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console,apiKeyRevoke")
 
-	val keyId = project.findProperty("id")?.toString() ?: error("Please provide -Pid=<key_id>")
-	args = listOf(keyId)
+	doFirst {
+		val keyId = project.findProperty("id")?.toString() ?: error("Please provide -Pid=<key_id>")
+		args = listOf(keyId)
+	}
 }
 
 // Whitelist Tasks (like Rails rake whitelist:*)
@@ -160,14 +243,16 @@ tasks.register<JavaExec>("whitelistAdd") {
 	description = "Add user to whitelist. Usage: ./gradlew whitelistAdd -PgithubId=123 -Pusername='user' [-Pemail='user@example.com'] [-Pnotes='notes']"
 	classpath = sourceSets["main"].runtimeClasspath
 	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev,whitelistAdd")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console,whitelistAdd")
 
-	val githubId = project.findProperty("githubId")?.toString() ?: error("Please provide -PgithubId=<id>")
-	val username = project.findProperty("username")?.toString() ?: error("Please provide -Pusername=<username>")
-	val email = project.findProperty("email")?.toString()
-	val notes = project.findProperty("notes")?.toString()
+	doFirst {
+		val githubId = project.findProperty("githubId")?.toString() ?: error("Please provide -PgithubId=<id>")
+		val username = project.findProperty("username")?.toString() ?: error("Please provide -Pusername=<username>")
+		val email = project.findProperty("email")?.toString()
+		val notes = project.findProperty("notes")?.toString()
 
-	args = listOfNotNull(githubId, username, email, notes)
+		args = listOfNotNull(githubId, username, email, notes)
+	}
 }
 
 tasks.register<JavaExec>("whitelistList") {
@@ -175,7 +260,7 @@ tasks.register<JavaExec>("whitelistList") {
 	description = "List all whitelisted users"
 	classpath = sourceSets["main"].runtimeClasspath
 	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev,whitelistList")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console,whitelistList")
 }
 
 tasks.register<JavaExec>("whitelistRemove") {
@@ -183,10 +268,12 @@ tasks.register<JavaExec>("whitelistRemove") {
 	description = "Remove user from whitelist. Usage: ./gradlew whitelistRemove -Pusername='user'"
 	classpath = sourceSets["main"].runtimeClasspath
 	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev,whitelistRemove")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console,whitelistRemove")
 
-	val username = project.findProperty("username")?.toString() ?: error("Please provide -Pusername=<username>")
-	args = listOf(username)
+	doFirst {
+		val username = project.findProperty("username")?.toString() ?: error("Please provide -Pusername=<username>")
+		args = listOf(username)
+	}
 }
 
 // Spring Shell (Interactive Console like Rails console)
@@ -195,9 +282,45 @@ tasks.register<JavaExec>("shell") {
 	description = "Launch interactive Spring Shell console (like Rails console)"
 	classpath = sourceSets["main"].runtimeClasspath
 	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console")
 	standardInput = System.`in`
-
-	// Enable interactive mode
 	systemProperty("spring.shell.interactive.enabled", "true")
 }
+
+// Sentry Gradle Plugin Configuration
+// Uploads source code to Sentry for better stack traces (shows actual code in error reports)
+// Configuration loaded from sentry.properties (auto-detected by plugin)
+sentry {
+	includeSourceContext.set(true)
+	// org, projectName, and authToken are loaded from sentry.properties automatically
+
+	// Reduce Sentry CLI verbosity (suppress warnings)
+	debug.set(false)
+}
+
+// ktlint Configuration - DISABLED TEMPORARILY
+// Will re-enable after fixing code quality issues
+// configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+// 	version.set("1.1.1")
+// 	android.set(false)
+// 	verbose.set(true)
+// 	outputToConsole.set(true)
+// 	coloredOutput.set(true)
+// 	ignoreFailures.set(true)
+// 	enableExperimentalRules.set(false)
+// 	filter {
+// 		exclude("**/generated/**")
+// 		exclude("**/build/**")
+// 		exclude("**/*.kts")
+// 	}
+// }
+
+// tasks.named("compileKotlin") {
+// 	dependsOn("ktlintCheck")
+// }
+
+// tasks.register("formatImports") {
+// 	group = "formatting"
+// 	description = "Auto-fix import ordering using ktlint"
+// 	dependsOn("ktlintFormat")
+// }

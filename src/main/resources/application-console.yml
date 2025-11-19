@@ -1,0 +1,44 @@
+# Console Profile Configuration
+# Activated with: SPRING_PROFILES_ACTIVE=dev,console
+# Used for: Gradle tasks (apiKeyList, etc.) and Spring Shell
+
+spring:
+  # Disable web server for console mode (prevents port 8080 conflict)
+  main:
+    web-application-type: none  # No Tomcat, no web server
+    banner-mode: console  # Show Spring Boot banner
+
+  # Keep database configuration (inherited from base application.yml)
+  # JPA, Flyway, and datasource work normally
+
+  # Disable OAuth2 client (not needed in console mode)
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID:disabled}
+            client-secret: ${GITHUB_CLIENT_SECRET:disabled}
+
+# Disable server configuration (no web server running)
+# Inherits from base but won't start since web-application-type=none
+
+# Spring Shell Configuration
+# Enables interactive console mode
+spring.shell:
+  interactive:
+    enabled: true
+  command:
+    version:
+      enabled: false  # Disable default version command
+  history:
+    enabled: true  # Enable command history (up/down arrows)
+
+# Logging for console mode (more verbose than production)
+logging:
+  level:
+    root: INFO
+    com.reconnoiter.api: DEBUG  # Show our app logs
+    org.springframework.shell: INFO
+    org.hibernate.SQL: DEBUG  # Show SQL queries in console
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Show SQL parameters

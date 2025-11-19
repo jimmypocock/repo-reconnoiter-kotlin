@@ -27,7 +27,11 @@ class ApiKeyAuthenticationFilter(
         private val PUBLIC_PATHS = setOf(
             "/",
             "/actuator/health",
-            "/actuator/info"
+            "/actuator/info",
+            "/openapi.json",
+            "/openapi.yml",
+            "/test/sentry",
+            "/test/sentry-config"
         )
     }
 

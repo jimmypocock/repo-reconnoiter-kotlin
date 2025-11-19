@@ -1,12 +1,15 @@
 package com.reconnoiter.api.security
 
+import javax.crypto.SecretKey
+
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+
 import java.util.*
-import javax.crypto.SecretKey
 
 @Component
 class JwtUtil(
@@ -14,9 +17,17 @@ class JwtUtil(
     @Value("\${jwt.expiration:86400000}") private val expirationMs: Long // 24 hours default
 ) {
 
+    //--------------------------------------
+    // CONSTANTS
+    //--------------------------------------
+
     private val secretKey: SecretKey by lazy {
         Keys.hmacShaKeyFor(secret.toByteArray())
     }
+
+    //--------------------------------------
+    // PUBLIC INSTANCE METHODS
+    //--------------------------------------
 
     fun generateToken(userId: Long, email: String): String {
         val now = Date()
@@ -32,45 +43,32 @@ class JwtUtil(
             .compact()
     }
 
-    fun validateToken(token: String): Boolean {
-        return try {
-            Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-            true
-        } catch (e: Exception) {
-            false
-        }
+    fun getEmailFromToken(token: String): String {
+        val claims = getClaims(token)
+        return claims.get("email", String::class.java)
     }
 
-    fun getUserIdFromToken(token: String): Long? {
-        return try {
-            val claims = getClaims(token)
-            claims?.get("user_id", Integer::class.java)?.toLong()
-        } catch (e: Exception) {
-            null
-        }
+    fun getUserIdFromToken(token: String): Long {
+        val claims = getClaims(token)
+        return claims.get("user_id", Integer::class.java).toLong()
     }
 
-    fun getEmailFromToken(token: String): String? {
-        return try {
-            val claims = getClaims(token)
-            claims?.get("email", String::class.java)
-        } catch (e: Exception) {
-            null
-        }
+    fun validateToken(token: String): Claims {
+        return getClaims(token)
     }
 
-    private fun getClaims(token: String): Claims? {
-        return try {
-            Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .payload
-        } catch (e: Exception) {
-            null
-        }
+    //--------------------------------------
+    // PRIVATE METHODS
+    //--------------------------------------
+
+    private fun getClaims(token: String): Claims {
+        // Let JJWT exceptions bubble up to caller (filter will handle them)
+        // Expected exceptions: ExpiredJwtException, MalformedJwtException, SignatureException
+        // Unexpected exceptions will bubble to Sentry
+        return Jwts.parser()
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+            .payload
     }
 }

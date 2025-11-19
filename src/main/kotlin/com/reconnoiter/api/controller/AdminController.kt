@@ -1,5 +1,7 @@
 package com.reconnoiter.api.controller
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+
 import com.reconnoiter.api.entity.User
 import com.reconnoiter.api.repository.RepositoryRepository
 import org.springframework.http.ResponseEntity
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
  * Endpoints:
  *   GET /admin/stats - Get platform-wide statistics
  */
+@ConditionalOnWebApplication
 @RestController
 @RequestMapping("/admin")
 class AdminController(

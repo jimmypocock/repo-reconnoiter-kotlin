@@ -1,0 +1,15 @@
+# MySQL Client Configuration for Local Development
+# Copy this file to mysql.cnf and fill in your credentials
+# mysql.cnf is gitignored and will not be committed
+
+[client]
+user=reconnoiter
+password=
+host=127.0.0.1
+port=3306
+database=reconnoiter_dev
+
+# Usage:
+# mysql --defaults-file=mysql.cnf
+# Or create an alias in your ~/.bashrc or ~/.zshrc:
+# alias mysql-dev='mysql --defaults-file=mysql.cnf'
