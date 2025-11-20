@@ -22,9 +22,9 @@
 ### Step 1: Start the Application
 
 **In IntelliJ:**
-1. Open `KotlinApiApplication.kt`
+1. Open `RepoReconnoiterApplication.kt`
 2. Click green ▶️ next to `fun main()` OR use Run Configuration
-3. Wait for "Started KotlinApiApplication" in console
+3. Wait for "Started RepoReconnoiterApplication" in console
 4. Verify: `curl http://localhost:8080/api/v1/actuator/health`
 
 **Or in Terminal:**
@@ -116,7 +116,7 @@ curl -H "X-User-Token: YOUR_JWT_TOKEN" http://localhost:8080/api/v1/profile
 **Start app:**
 ```bash
 ./gradlew bootRun
-# Or IntelliJ: Run → Run 'KotlinApiApplication'
+# Or IntelliJ: Run → Run 'RepoReconnoiterApplication'
 ```
 
 **Run tests:**

@@ -54,6 +54,19 @@ class JwtAuthenticationFilter(
             val token = extractTokenFromRequest(request)
 
             if (token != null) {
+                // Check if API key was validated (two-layer auth: API key + JWT)
+                val apiKeyValidated = request.getAttribute("API_KEY_VALIDATED") as? Boolean ?: false
+
+                if (!apiKeyValidated) {
+                    sendErrorResponse(
+                        response,
+                        401,
+                        "Missing or invalid API key - user endpoints require both API key and JWT",
+                        "MISSING_API_KEY"
+                    )
+                    return
+                }
+
                 // validateToken() now throws exceptions instead of returning boolean
                 val claims = jwtUtil.validateToken(token)
                 val userId = claims.get("user_id", Integer::class.java).toLong()

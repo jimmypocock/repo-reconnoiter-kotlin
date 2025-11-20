@@ -24,15 +24,13 @@ spring:
 # Inherits from base but won't start since web-application-type=none
 
 # Spring Shell Configuration
-# Enables interactive console mode
+# Disabled by default for task runners (apiKeyGenerate, whitelistAdd, etc.)
+# Override in application-shell.yml for interactive console mode
 spring.shell:
   interactive:
-    enabled: true
-  command:
-    version:
-      enabled: false  # Disable default version command
-  history:
-    enabled: true  # Enable command history (up/down arrows)
+    enabled: false
+  noninteractive:
+    enabled: false
 
 # Logging for console mode (more verbose than production)
 logging:

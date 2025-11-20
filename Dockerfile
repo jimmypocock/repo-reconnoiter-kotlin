@@ -94,8 +94,6 @@ CMD ["java", \
      "-XX:+UseStringDeduplication", \
      # Security settings
      "-Djava.security.egd=file:/dev/./urandom", \
-     # Spring Boot settings
-     "-Dspring.profiles.active=prod", \
      # Run the application
      "-cp", ".:lib/*", \
-     "com.reconnoiter.api.KotlinApiApplicationKt"]
+     "com.reconnoiter.api.RepoReconnoiterApplicationKt"]

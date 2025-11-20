@@ -9,30 +9,29 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import java.time.LocalDateTime
 
+/**
+ * API Key Authentication Filter
+ *
+ * Validates API keys from Authorization: Bearer header for API access control.
+ * This filter runs BEFORE JwtAuthenticationFilter.
+ *
+ * API key validation provides specific error messages:
+ * - Missing header: Let Spring Security handle (permitAll vs authenticated)
+ * - Malformed header: 400 Bad Request
+ * - Invalid/revoked key: 401 Unauthorized with specific reason
+ *
+ * Valid API keys set authentication in SecurityContext.
+ */
 @Component
 class ApiKeyAuthenticationFilter(
     private val apiKeyService: ApiKeyService
 ) : OncePerRequestFilter() {
 
-    //--------------------------------------
-    // CONSTANTS
-    //--------------------------------------
-
     companion object {
         private const val AUTHORIZATION_HEADER = "Authorization"
         private const val BEARER_PREFIX = "Bearer "
-
-        // Public endpoints that don't require API key
-        private val PUBLIC_PATHS = setOf(
-            "/",
-            "/actuator/health",
-            "/actuator/info",
-            "/openapi.json",
-            "/openapi.yml",
-            "/test/sentry",
-            "/test/sentry-config"
-        )
     }
 
     //--------------------------------------
@@ -44,36 +43,53 @@ class ApiKeyAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val path = request.requestURI.removePrefix(request.contextPath)
+        val authHeader = request.getHeader(AUTHORIZATION_HEADER)
 
-        // Skip API key validation for public endpoints
-        if (isPublicPath(path)) {
+        // No Authorization header → continue (let SecurityConfig decide if auth required)
+        if (authHeader == null) {
             filterChain.doFilter(request, response)
             return
         }
 
-        val authHeader = request.getHeader(AUTHORIZATION_HEADER)
-
-        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            response.status = HttpServletResponse.SC_UNAUTHORIZED
-            response.contentType = "application/json"
-            response.writer.write("""{"error":"Unauthorized - Missing or invalid Authorization header","message":"Please provide a valid API key via 'Authorization: Bearer <API_KEY>' header"}""")
+        // Malformed Authorization header (not "Bearer ...")
+        if (!authHeader.startsWith(BEARER_PREFIX)) {
+            sendErrorResponse(
+                response,
+                400,
+                "Malformed Authorization header - expected format: 'Bearer <api_key>'",
+                "MALFORMED_HEADER"
+            )
             return
         }
 
         val apiKey = authHeader.substring(BEARER_PREFIX.length).trim()
 
+        // Empty API key after "Bearer "
+        if (apiKey.isEmpty()) {
+            sendErrorResponse(
+                response,
+                400,
+                "Empty API key - provide a valid key after 'Bearer '",
+                "EMPTY_API_KEY"
+            )
+            return
+        }
+
         // Validate API key
         val validatedKey = apiKeyService.validateApiKey(apiKey)
 
         if (validatedKey == null) {
-            response.status = HttpServletResponse.SC_UNAUTHORIZED
-            response.contentType = "application/json"
-            response.writer.write("""{"error":"Unauthorized - Invalid API key","message":"The provided API key is invalid or has been revoked"}""")
+            // Invalid or revoked API key
+            sendErrorResponse(
+                response,
+                401,
+                "Invalid or revoked API key - please check your credentials",
+                "INVALID_API_KEY"
+            )
             return
         }
 
-        // Set authentication in security context
+        // Valid API key → set authentication
         val authorities = listOf(SimpleGrantedAuthority("ROLE_API_USER"))
         val authentication = PreAuthenticatedAuthenticationToken(
             validatedKey,
@@ -82,8 +98,11 @@ class ApiKeyAuthenticationFilter(
         )
         SecurityContextHolder.getContext().authentication = authentication
 
-        // Store API key in request attribute for later use
+        // Store API key in request attribute for later use (rate limiting, logging, etc.)
         request.setAttribute("apiKey", validatedKey)
+
+        // Set flag for JWT filter to verify (ensures both API key AND JWT for user endpoints)
+        request.setAttribute("API_KEY_VALIDATED", true)
 
         filterChain.doFilter(request, response)
     }
@@ -92,7 +111,26 @@ class ApiKeyAuthenticationFilter(
     // PRIVATE METHODS
     //--------------------------------------
 
-    private fun isPublicPath(path: String): Boolean {
-        return PUBLIC_PATHS.any { publicPath -> path == publicPath || path.startsWith("$publicPath/") }
+    private fun sendErrorResponse(
+        response: HttpServletResponse,
+        status: Int,
+        message: String,
+        errorCode: String
+    ) {
+        response.status = status
+        response.contentType = "application/json"
+        response.characterEncoding = "UTF-8"
+        response.writer.write(
+            """
+            {
+                "error": "${if (status == 401) "Unauthorized" else "Bad Request"}",
+                "message": "$message",
+                "errorCode": "$errorCode",
+                "timestamp": "${LocalDateTime.now()}"
+            }
+            """.trimIndent()
+        )
+        response.writer.flush()
     }
+
 }

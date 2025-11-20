@@ -26,12 +26,12 @@ info:
     ### 2. User-Level Authentication (Required for user-specific endpoints)
     - **JWT Token:** Add `X-User-Token: <JWT>` header for user-authenticated endpoints
     - **Purpose:** Proves which user is making the request
-    - **How to get JWT:** Call `/api/v1/auth/exchange` with GitHub OAuth token
+    - **How to get JWT:** Call `/api/v1/auth/token` with GitHub OAuth token
     - JWT expires after 24 hours
 
     ### Authentication Flow
     1. User authenticates with GitHub OAuth (handled by your frontend)
-    2. Frontend exchanges GitHub token for JWT via `/api/v1/auth/exchange`
+    2. Frontend exchanges GitHub token for JWT via `/api/v1/auth/token`
     3. Frontend includes both API key + JWT in subsequent requests
 
     ### Public Endpoints (No Authentication)
@@ -95,7 +95,7 @@ paths:
                   authentication:
                     type: object
 
-  /auth/exchange:
+  /auth/token:
     post:
       tags:
         - Authentication

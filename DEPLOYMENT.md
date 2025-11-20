@@ -265,7 +265,7 @@ For rate limiting, caching, and custom domain:
    - URL: Your App Runner service URL
 4. Configure routes:
    - `GET /api/v1/{proxy+}` → App Runner
-   - `POST /api/v1/auth/exchange` → App Runner
+   - `POST /api/v1/auth/token` → App Runner
 5. Configure throttling:
    - Default route throttle: 100 req/sec
    - Per-client throttle: 25 req/day (requires usage plans)

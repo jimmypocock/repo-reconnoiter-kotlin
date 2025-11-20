@@ -2,6 +2,7 @@ package com.reconnoiter.api.controller
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.reconnoiter.api.service.AuthExchangeResult
 import com.reconnoiter.api.service.AuthService
 import org.springframework.http.ResponseEntity
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
  * Handles GitHub OAuth token exchange for JWT tokens
  *
  * Endpoints:
- *   POST /auth/exchange - Exchange GitHub OAuth token for JWT
+ *   POST /auth/token - Exchange GitHub OAuth token for JWT
  */
 @ConditionalOnWebApplication
 @RestController
@@ -25,7 +26,7 @@ class AuthController(
 ) {
 
     /**
-     * POST /auth/exchange
+     * POST /auth/token
      * Exchange GitHub OAuth token for JWT
      *
      * Request body:
@@ -45,7 +46,7 @@ class AuthController(
      *     }
      *   }
      */
-    @PostMapping("/exchange")
+    @PostMapping("/token")
     fun exchange(@RequestBody request: ExchangeRequest): ResponseEntity<*> {
         if (request.githubToken.isBlank()) {
             return ResponseEntity.badRequest().body(
@@ -89,6 +90,7 @@ class AuthController(
 }
 
 data class ExchangeRequest(
+    @JsonProperty("github_token")
     val githubToken: String
 )
 

@@ -30,6 +30,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-webflux") // WebClient for GitHub API
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -73,9 +74,14 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+// Generate build info for actuator /info endpoint
+springBoot {
+	buildInfo()
+}
+
 // Specify main class for bootJar (since we have multiple main classes in task scripts)
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
 }
 
 // Custom tasks (like npm scripts)
@@ -198,7 +204,7 @@ tasks.register<JavaExec>("dbSeed") {
 	group = "database"
 	description = "Seed the database with initial data"
 	classpath = sourceSets["main"].runtimeClasspath
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
 	environment("SPRING_PROFILES_ACTIVE", "dev,console,dbSeed")
 }
 
@@ -207,7 +213,7 @@ tasks.register<JavaExec>("apiKeyGenerate") {
 	group = "api_keys"
 	description = "Generate a new API key. Usage: ./gradlew apiKeyGenerate -Pname='Key Name' [-Pemail='user@example.com']"
 	classpath = sourceSets["main"].runtimeClasspath
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
 	environment("SPRING_PROFILES_ACTIVE", "dev,console,apiKeyGenerate")
 
 	// Pass properties as args
@@ -220,7 +226,7 @@ tasks.register<JavaExec>("apiKeyList") {
 	group = "api_keys"
 	description = "List all API keys with usage stats"
 	classpath = sourceSets["main"].runtimeClasspath
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
 	environment("SPRING_PROFILES_ACTIVE", "dev,console,apiKeyList")
 }
 
@@ -228,7 +234,7 @@ tasks.register<JavaExec>("apiKeyRevoke") {
 	group = "api_keys"
 	description = "Revoke an API key. Usage: ./gradlew apiKeyRevoke -Pid=123"
 	classpath = sourceSets["main"].runtimeClasspath
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
 	environment("SPRING_PROFILES_ACTIVE", "dev,console,apiKeyRevoke")
 
 	doFirst {
@@ -242,7 +248,7 @@ tasks.register<JavaExec>("whitelistAdd") {
 	group = "whitelist"
 	description = "Add user to whitelist. Usage: ./gradlew whitelistAdd -PgithubId=123 -Pusername='user' [-Pemail='user@example.com'] [-Pnotes='notes']"
 	classpath = sourceSets["main"].runtimeClasspath
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
 	environment("SPRING_PROFILES_ACTIVE", "dev,console,whitelistAdd")
 
 	doFirst {
@@ -259,7 +265,7 @@ tasks.register<JavaExec>("whitelistList") {
 	group = "whitelist"
 	description = "List all whitelisted users"
 	classpath = sourceSets["main"].runtimeClasspath
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
 	environment("SPRING_PROFILES_ACTIVE", "dev,console,whitelistList")
 }
 
@@ -267,7 +273,7 @@ tasks.register<JavaExec>("whitelistRemove") {
 	group = "whitelist"
 	description = "Remove user from whitelist. Usage: ./gradlew whitelistRemove -Pusername='user'"
 	classpath = sourceSets["main"].runtimeClasspath
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
 	environment("SPRING_PROFILES_ACTIVE", "dev,console,whitelistRemove")
 
 	doFirst {
@@ -281,10 +287,9 @@ tasks.register<JavaExec>("shell") {
 	group = "application"
 	description = "Launch interactive Spring Shell console (like Rails console)"
 	classpath = sourceSets["main"].runtimeClasspath
-	mainClass.set("com.reconnoiter.api.KotlinApiApplicationKt")
-	environment("SPRING_PROFILES_ACTIVE", "dev,console")
+	mainClass.set("com.reconnoiter.api.RepoReconnoiterApplicationKt")
+	environment("SPRING_PROFILES_ACTIVE", "dev,console,shell")
 	standardInput = System.`in`
-	systemProperty("spring.shell.interactive.enabled", "true")
 }
 
 // Sentry Gradle Plugin Configuration

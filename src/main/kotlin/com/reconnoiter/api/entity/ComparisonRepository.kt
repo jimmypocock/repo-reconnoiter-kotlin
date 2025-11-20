@@ -19,9 +19,8 @@ data class ComparisonRepository(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comparison_id", nullable = false)
-    val comparison: Comparison,
+    @Column(name = "comparison_id", nullable = false, insertable = false, updatable = false)
+    val comparisonId: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repository_id", nullable = false)

@@ -1,6 +1,7 @@
 package com.reconnoiter.api.controller
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
+import org.springframework.context.annotation.Profile
 
 import io.sentry.Sentry
 
@@ -9,6 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+/**
+ * Test Controller for Sentry integration testing
+ * Only available in development mode (dev profile)
+ * Endpoints:
+ * - GET /test/sentry - Trigger a test exception
+ * - GET /test/sentry-config - Check Sentry configuration
+ */
+@Profile("dev")  // Only load in development
 @ConditionalOnWebApplication
 @RestController
 @RequestMapping("/test")

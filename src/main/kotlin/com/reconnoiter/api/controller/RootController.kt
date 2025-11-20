@@ -26,7 +26,7 @@ class RootController {
                 note = "This endpoint is public and does not require authentication",
                 endpoints = mapOf(
                     "auth" to EndpointInfo(
-                        url = "/api/v1/auth/exchange",
+                        url = "/api/v1/auth/token",
                         methods = listOf("POST"),
                         description = "Exchange GitHub OAuth token for JWT",
                         authentication = "Required (API Key only)"

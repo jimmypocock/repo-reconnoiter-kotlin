@@ -1,0 +1,14 @@
+# Shell Profile Configuration
+# Activate with: SPRING_PROFILES_ACTIVE=dev,console,shell
+# Used for: ./gradlew shell (interactive Spring Shell console)
+
+# Spring Shell Configuration
+# Enable interactive console mode (like Rails console)
+spring.shell:
+  interactive:
+    enabled: true
+  command:
+    version:
+      enabled: false  # Disable default version command
+  history:
+    enabled: true  # Enable command history (up/down arrows)

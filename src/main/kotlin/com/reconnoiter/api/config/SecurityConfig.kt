@@ -55,16 +55,17 @@ class SecurityConfig(
                         "/",
                         "/actuator/health",
                         "/actuator/info",
+                        "/actuator/metrics",
+                        "/actuator/mappings",
                         "/openapi.json",
-                        "/openapi.yml",
-                        "/test/**"
+                        "/openapi.yml"
                     ).permitAll()
                     // All other endpoints require at least API key auth
                     // JWT filter will handle user-specific endpoints
                     .anyRequest().authenticated()
             }
             // OAuth2 login flow (alternative auth method for development/testing)
-            // Primary flow is: Next.js handles OAuth → POST /auth/exchange → JWT
+            // Primary flow is: Next.js handles OAuth → POST /auth/token → JWT
             .oauth2Login { oauth2 ->
                 oauth2
                     .successHandler(oauth2LoginSuccessHandler)

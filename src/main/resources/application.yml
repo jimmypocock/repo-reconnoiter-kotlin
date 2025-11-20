@@ -57,10 +57,16 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,mappings
   endpoint:
     health:
       show-details: always
+    info:
+      enabled: true  # Explicitly enable info endpoint
+    metrics:
+      enabled: true  # Explicitly enable metrics endpoint
+    mappings:
+      enabled: true  # Explicitly enable mappings endpoint
 
 # JWT Configuration
 jwt:
@@ -74,6 +80,14 @@ app:
     # Required - no default (must be set in .env or environment)
     url: ${APP_FRONTEND_URL}
 
+# Info endpoint configuration (appears at /actuator/info)
+info:
+  app:
+    name: RepoReconnoiter
+    description: GitHub repository analysis API
+    java-version: ${java.version}
+    environment: ${SPRING_PROFILES_ACTIVE:unknown}
+
 # Sentry Error Tracking Configuration
 # DSN configured per-profile (disabled in dev, enabled in prod)
 sentry:
@@ -83,3 +97,9 @@ sentry:
   send-default-pii: false  # Don't send personally identifiable information
   attach-stacktrace: true  # Include stack traces in breadcrumbs
   enable-tracing: true  # Performance monitoring
+
+# Logging Configuration
+logging:
+  level:
+    root: WARN  # Only show warnings and errors for third-party libraries
+    com.reconnoiter.api: INFO  # Show info-level logs for our application code

@@ -43,11 +43,5 @@ data class Category(
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime? = null,
-
-    @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val repositoryCategories: List<RepositoryCategory> = emptyList(),
-
-    @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val comparisonCategories: List<ComparisonCategory> = emptyList()
+    val updatedAt: LocalDateTime? = null
 )

@@ -6,6 +6,7 @@ import com.reconnoiter.api.dto.ComparisonDetailResponse
 import com.reconnoiter.api.dto.ComparisonResponse
 import com.reconnoiter.api.dto.PagedResponse
 import com.reconnoiter.api.repository.ComparisonRepository
+import com.reconnoiter.api.service.SearchSynonymExpander
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -30,8 +31,10 @@ class ComparisonsController(
      * Returns paginated list of comparisons with optional filtering
      *
      * Query parameters:
-     *   - search: Search term for fuzzy matching
-     *   - date: Filter by date range (week, month)
+     *   - search: Search term with synonym expansion and FULLTEXT matching
+     *   - start_date: Filter by start date (ISO 8601 format)
+     *   - end_date: Filter by end date (ISO 8601 format)
+     *   - date: Filter by date range shorthand (week, month) - deprecated, use start_date/end_date
      *   - sort: Sort order (recent, popular)
      *   - page: Page number (default: 1)
      *   - per_page: Items per page (default: 20, max: 100)
@@ -39,6 +42,8 @@ class ComparisonsController(
     @GetMapping
     fun index(
         @RequestParam(required = false) search: String?,
+        @RequestParam(required = false, name = "start_date") startDate: String?,
+        @RequestParam(required = false, name = "end_date") endDate: String?,
         @RequestParam(required = false) date: String?,
         @RequestParam(required = false, defaultValue = "recent") sort: String,
         @RequestParam(required = false, defaultValue = "1") page: Int,
@@ -52,20 +57,41 @@ class ComparisonsController(
 
         val pageable = PageRequest.of(pageNumber, itemsPerPage)
 
+        // Parse date range if provided
+        val parsedStartDate = when {
+            !startDate.isNullOrBlank() -> LocalDateTime.parse(startDate)
+            date == "week" -> LocalDateTime.now().minusWeeks(1)
+            date == "month" -> LocalDateTime.now().minusMonths(1)
+            else -> null
+        }
+
+        val parsedEndDate = if (!endDate.isNullOrBlank()) {
+            LocalDateTime.parse(endDate)
+        } else {
+            null
+        }
+
         // Fetch comparisons based on filters
         val comparisonsPage = when {
-            // Search query provided
+            // Search query provided - use advanced search with synonym expansion
             !search.isNullOrBlank() -> {
-                comparisonRepository.searchByQuery(search.trim(), pageable)
+                // Expand search terms with synonyms
+                val expandedTerms = SearchSynonymExpander.expandQuery(search.trim())
+
+                // Format for MySQL BOOLEAN MODE with OR logic: "term1* term2* term3*"
+                // Note: No '+' prefix because synonyms are alternatives (OR), not requirements (AND)
+                val booleanQuery = expandedTerms.joinToString(" ") { "$it*" }
+
+                comparisonRepository.advancedSearch(
+                    searchTerms = booleanQuery,
+                    startDate = parsedStartDate,
+                    endDate = parsedEndDate,
+                    pageable = pageable
+                )
             }
-            // Date filter provided
-            date == "week" -> {
-                val weekAgo = LocalDateTime.now().minusWeeks(1)
-                comparisonRepository.findByCreatedAtAfter(weekAgo, pageable)
-            }
-            date == "month" -> {
-                val monthAgo = LocalDateTime.now().minusMonths(1)
-                comparisonRepository.findByCreatedAtAfter(monthAgo, pageable)
+            // Date filter without search
+            parsedStartDate != null -> {
+                comparisonRepository.findByCreatedAtAfter(parsedStartDate, pageable)
             }
             // Sort by popularity
             sort == "popular" -> {
@@ -113,8 +139,8 @@ class ComparisonsController(
      */
     @GetMapping("/{id}")
     fun show(@PathVariable id: Long): ResponseEntity<ComparisonDetailResponse> {
-        val comparison = comparisonRepository.findById(id)
-            .orElseThrow { ComparisonNotFoundException("Comparison with ID $id not found") }
+        val comparison = comparisonRepository.findByIdWithRelations(id)
+            ?: throw ComparisonNotFoundException("Comparison with ID $id not found")
 
         return ResponseEntity.ok(ComparisonDetailResponse.from(comparison))
     }

@@ -1,6 +1,7 @@
 package com.reconnoiter.api.repository
 
 import com.reconnoiter.api.entity.ApiKey
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -26,7 +27,9 @@ interface ApiKeyRepository : JpaRepository<ApiKey, Long> {
 
     /**
      * Find all active API keys
+     * Eagerly loads user to prevent LazyInitializationException
      */
+    @EntityGraph(attributePaths = ["user"])
     fun findByRevokedAtIsNull(): List<ApiKey>
 
     /**

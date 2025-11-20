@@ -172,7 +172,7 @@ docker-compose exec mysql mysql -u reconnoiter -pdevpassword reconnoiter_dev -e 
 ### IDE Setup (IntelliJ IDEA)
 
 1. Open project in IntelliJ IDEA
-2. Right-click `KotlinApiApplication.kt` → Run
+2. Right-click `RepoReconnoiterApplication.kt` → Run
 3. Edit configuration → Add environment variables from `.env`
 4. Use built-in debugger and hot reload
 
@@ -315,7 +315,7 @@ src/
 This API uses **two-layer authentication** similar to the Rails version:
 
 #### Layer 1: API Key (App-to-App)
-**Required for**: ALL endpoints except `/`, `/auth/exchange`, `/openapi.*`
+**Required for**: ALL endpoints except `/`, `/auth/token`, `/openapi.*`
 
 ```bash
 Authorization: Bearer <API_KEY>
@@ -335,7 +335,7 @@ X-User-Token: <JWT>
 
 Exchange GitHub OAuth token for JWT:
 ```bash
-POST /api/v1/auth/exchange
+POST /api/v1/auth/token
 Content-Type: application/json
 
 {
@@ -353,7 +353,7 @@ Content-Type: application/json
 - `GET /api/v1/openapi.yml` - OpenAPI spec (YAML)
 
 **Authentication (API Key Required):**
-- `POST /api/v1/auth/exchange` - Exchange GitHub token for JWT
+- `POST /api/v1/auth/token` - Exchange GitHub token for JWT
 - `GET /api/v1/profile` - Get current user profile (JWT required)
 
 **Repositories (API Key Required):**

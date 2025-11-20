@@ -89,9 +89,11 @@ data class Comparison(
     @Column(name = "updated_at", nullable = false)
     val updatedAt: LocalDateTime? = null,
 
-    @OneToMany(mappedBy = "comparison", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val comparisonCategories: List<ComparisonCategory> = emptyList(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "comparison_id", nullable = false)
+    val comparisonCategories: Set<ComparisonCategory> = emptySet(),
 
-    @OneToMany(mappedBy = "comparison", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val comparisonRepositories: List<ComparisonRepository> = emptyList()
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "comparison_id", nullable = false)
+    val comparisonRepositories: Set<ComparisonRepository> = emptySet()
 )

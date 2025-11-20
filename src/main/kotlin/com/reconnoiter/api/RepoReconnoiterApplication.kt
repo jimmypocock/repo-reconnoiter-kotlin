@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class KotlinApiApplication
+class RepoReconnoiterApplication
 
 fun main(args: Array<String>) {
-	runApplication<KotlinApiApplication>(*args)
+	runApplication<RepoReconnoiterApplication>(*args)
 }
