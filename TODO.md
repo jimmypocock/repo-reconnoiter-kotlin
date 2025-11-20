@@ -86,9 +86,9 @@ curl -H "X-User-Token: YOUR_JWT_TOKEN" http://localhost:8080/api/v1/profile
 - [ ] Background job simulation (or use Spring `@Async`)
 
 ### Phase 3: Comparison Endpoints
-- [ ] `GET /api/v1/comparisons` - List comparisons
+- [x] `GET /api/v1/comparisons` - List comparisons
 - [ ] `POST /api/v1/comparisons` - Create comparison (async)
-- [ ] `GET /api/v1/comparisons/:id` - Show comparison
+- [x] `GET /api/v1/comparisons/:id` - Show comparison
 - [ ] `GET /api/v1/comparisons/status/:session_id` - Comparison status
 - [ ] Create `Comparison` entity
 - [ ] Create `ComparisonRepository` join table

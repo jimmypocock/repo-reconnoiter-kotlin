@@ -5,8 +5,8 @@ import { RepoReconnoiterStack } from '../lib/repo-reconnoiter-stack';
 
 const app = new cdk.App();
 
-// Environment from context or environment variables
-const environmentName = app.node.tryGetContext('environment') || process.env.ENVIRONMENT || 'dev';
+// Environment from context or environment variables (defaults to prod)
+const environmentName = app.node.tryGetContext('environment') || process.env.ENVIRONMENT || 'prod';
 const awsAccount = process.env.CDK_DEFAULT_ACCOUNT;
 const awsRegion = process.env.CDK_DEFAULT_REGION || 'us-east-1';
 

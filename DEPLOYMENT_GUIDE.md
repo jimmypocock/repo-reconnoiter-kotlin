@@ -97,11 +97,15 @@ ALLOWED_ORIGINS=https://yourdomain.com
 **API Key Required:**
 - `POST /auth/token` - Exchange GitHub token for JWT
 - `GET /comparisons` - List comparisons
+- `GET /comparisons/:id` - Show comparison
 - `GET /repositories` - List repositories
+- `GET /repositories/:id` - Show repository
 
 **API Key + JWT Required:**
 - `GET /profile` - User profile
-- `POST /comparisons` - Create comparison (uses OpenAI, costs money)
+- `POST /comparisons` - Create comparison (uses OpenAI, costs money) (Not yet implemented)
+- `POST /repositories/analyze_by_url` - Create analysis (uses OpenAI, costs money) (Not yet implemented)
+- `POST /repositories/:id/analyze` - Create analysis (uses OpenAI, costs money) (Not yet implemented)
 
 ### Pre-Deployment Checklist
 
@@ -118,13 +122,58 @@ ALLOWED_ORIGINS=https://yourdomain.com
 - [x] N-gram FULLTEXT search implemented
 
 **To Complete During Deployment:**
-- [ ] Create AWS infrastructure (VPC, RDS, ECS, ALB)
-- [ ] Run database migrations on RDS
-- [ ] Build and push Docker image to ECR
-- [ ] Deploy application to ECS
-- [ ] Configure CloudWatch monitoring
-- [ ] Test all endpoints
-- [ ] Go live!
+
+### Phase 0: AWS Account Setup (One-Time)
+- [ ] AWS account created
+- [ ] AWS CLI installed: `aws --version`
+- [ ] AWS credentials configured: `aws configure`
+- [ ] Verify credentials: `aws sts get-caller-identity`
+- [ ] CDK CLI installed: `npm install -g aws-cdk`
+- [ ] Bootstrap CDK: `cdk bootstrap aws://ACCOUNT-ID/us-east-1`
+
+### Phase 1: Deploy CDK Infrastructure (~10 minutes)
+- [ ] Install CDK dependencies: `cd cdk && npm install`
+- [ ] Build CDK: `npm run build`
+- [ ] Preview changes: `npm run diff -- -c environment=dev`
+- [ ] Deploy stack: `npm run deploy -- -c environment=dev`
+- [ ] Save outputs (ECR URI, RDS endpoint, Secret ARNs)
+
+### Phase 2: Configure Secrets (~5 minutes)
+- [ ] Update GitHub OAuth secret (see commands in CDK README)
+- [ ] Update OpenAI API key secret (see commands in CDK README)
+- [ ] Verify secrets: `aws secretsmanager list-secrets | grep repo-reconnoiter`
+
+### Phase 3: Build and Push Docker Image (~5 minutes)
+- [ ] Authenticate to ECR: `aws ecr get-login-password | docker login...`
+- [ ] Build image: `docker build -t repo-reconnoiter .`
+- [ ] Tag image: `docker tag repo-reconnoiter:latest ECR_URI:latest`
+- [ ] Push image: `docker push ECR_URI:latest`
+- [ ] Verify image: `aws ecr list-images --repository-name repo-reconnoiter-dev`
+
+### Phase 4: Run Database Migrations (~5 minutes)
+- [ ] Get DB password from Secrets Manager
+- [ ] Run Flyway migrations locally (or let ECS run on startup)
+- [ ] Verify migrations: Connect to RDS and check `flyway_schema_history`
+
+### Phase 5: Deploy ECS Service (Automatic via CDK)
+- [ ] ECS service automatically created by CDK
+- [ ] Tasks start and pull Docker image from ECR
+- [ ] Health checks pass at `/actuator/health`
+- [ ] ALB routes traffic to healthy tasks
+
+### Phase 6: Verify Deployment (~10 minutes)
+- [ ] Check ECS service status: `aws ecs describe-services...`
+- [ ] Check ECS task health: `aws ecs describe-tasks...`
+- [ ] View logs: `aws logs tail /ecs/repo-reconnoiter-dev --follow`
+- [ ] Test health endpoint: `curl https://ALB_URL/actuator/health`
+- [ ] Test API endpoint: `curl -H "Authorization: Bearer API_KEY" https://ALB_URL/api/v1/repositories`
+
+### Phase 7: Production Readiness (~5 minutes)
+- [ ] Generate production API keys
+- [ ] Verify Sentry error tracking works
+- [ ] Set up CloudWatch alarms (optional but recommended)
+- [ ] Update DNS to point to ALB (optional - use custom domain)
+- [ ] 🎉 Go live!
 
 ### Files to Reference
 
@@ -453,41 +502,8 @@ errorAlarm.addAlarmAction(new cwactions.SnsAction(alertTopic));
 
 **Cost Optimization:**
 - Use RDS reserved instances (save 40%)
-- Consider AWS App Runner instead of ECS (simpler, possibly cheaper)
 - Use VPC endpoints to avoid NAT Gateway ($32 savings)
-
----
-
-## Alternative: AWS App Runner (Simpler)
-
-If you want to deploy FASTER with less infrastructure complexity:
-
-```typescript
-const appRunner = new apprunner.Service(this, 'Service', {
-  source: apprunner.Source.fromEcr({
-    imageConfiguration: {
-      port: 8080,
-      environmentVariables: {
-        SPRING_PROFILES_ACTIVE: 'prod'
-      },
-      environmentSecrets: {
-        DATABASE_PASSWORD: apprunner.Secret.fromSecretsManager(dbSecret)
-      }
-    },
-    repository: ecrRepository
-  }),
-  autoDeploymentsEnabled: true
-});
-```
-
-**Pros:**
-- Much simpler (no VPC, ALB, ECS complexity)
-- Auto-scaling built-in
-- Potentially cheaper
-
-**Cons:**
-- Less control over networking
-- No VPC integration (RDS must be publicly accessible or use RDS Proxy)
+- Scale down ECS task count during off-hours
 
 ---
 

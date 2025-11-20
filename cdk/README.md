@@ -1,16 +1,34 @@
 # RepoReconnoiter AWS CDK Infrastructure
 
-This directory contains AWS CDK infrastructure code for deploying RepoReconnoiter to AWS.
+This directory contains AWS CDK infrastructure code for deploying RepoReconnoiter to AWS using **ECS Fargate**.
 
 ## Architecture
 
-- **VPC**: Multi-AZ VPC with public, private, and database subnets
-- **RDS PostgreSQL 17**: Managed database with automated backups
-- **AWS App Runner**: Serverless container service for the API
-- **HTTP API Gateway**: API Gateway for rate limiting, caching, and custom domains
+- **VPC**: Multi-AZ VPC with public, private, and isolated database subnets
+- **RDS MySQL 8.0**: Managed database with automated backups and encryption
+- **ECS Fargate**: Serverless container orchestration (to be added)
+- **Application Load Balancer**: Public-facing load balancer for HTTPS traffic (to be added)
 - **Secrets Manager**: Secure storage for sensitive configuration
 - **ECR**: Container registry for Docker images
 - **CloudWatch**: Logging and monitoring
+
+## Current Status
+
+✅ **Completed:**
+- VPC with proper subnet structure
+- RDS MySQL 8.0 database
+- ECR repository
+- Secrets Manager for all credentials
+- Security groups
+
+🚧 **To Be Added:**
+- ECS Fargate cluster
+- Task Definition with container configuration
+- ECS Service with auto-scaling
+- Application Load Balancer with target groups
+- CloudWatch Log Groups
+
+See [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md) for the complete deployment plan.
 
 ## Prerequisites
 
@@ -50,7 +68,7 @@ This directory contains AWS CDK infrastructure code for deploying RepoReconnoite
 
 ## Deployment
 
-### 1. Deploy Infrastructure
+### Phase 1: Deploy Infrastructure
 
 Deploy to development environment:
 ```bash
@@ -64,78 +82,72 @@ npm run deploy -- -c environment=prod
 
 The deployment will output:
 - ECR Repository URI
-- Database endpoint and credentials
-- Secret ARNs
+- RDS MySQL endpoint and port
+- Secret ARNs for database, JWT, GitHub OAuth, OpenAI
 
-### 2. Update Secrets
+### Phase 2: Update Secrets
 
-After deployment, update the secrets via AWS Console or CLI:
+After deployment, update the placeholder secrets via AWS Console or CLI:
 
 **GitHub OAuth Credentials:**
 ```bash
 aws secretsmanager update-secret \
   --secret-id repo-reconnoiter-dev-github-oauth \
-  --secret-string '{"clientId":"your_github_client_id","clientSecret":"your_github_client_secret"}'
+  --secret-string '{"clientId":"YOUR_GITHUB_CLIENT_ID","clientSecret":"YOUR_GITHUB_CLIENT_SECRET"}'
 ```
 
 **OpenAI API Key:**
 ```bash
 aws secretsmanager update-secret \
   --secret-id repo-reconnoiter-dev-openai-key \
-  --secret-string '{"apiKey":"your_openai_api_key"}'
+  --secret-string '{"apiKey":"YOUR_OPENAI_API_KEY"}'
 ```
 
-### 3. Build and Push Docker Image
+### Phase 3: Build and Push Docker Image
 
-From the project root directory:
+From the **project root directory** (not the cdk directory):
 
 ```bash
-# Get ECR login
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ECR_REPOSITORY_URI>
+# Get ECR login credentials
+aws ecr get-login-password --region us-east-1 | \
+  docker login --username AWS --password-stdin <ECR_REPOSITORY_URI>
 
 # Build Docker image
 docker build -t repo-reconnoiter .
 
-# Tag image
+# Tag image for ECR
 docker tag repo-reconnoiter:latest <ECR_REPOSITORY_URI>:latest
 
 # Push to ECR
 docker push <ECR_REPOSITORY_URI>:latest
 ```
 
-Replace `<ECR_REPOSITORY_URI>` with the output from the CDK deployment.
+Replace `<ECR_REPOSITORY_URI>` with the output from the CDK deployment (e.g., `123456789.dkr.ecr.us-east-1.amazonaws.com/repo-reconnoiter-dev`).
 
-### 4. Create App Runner Service
+### Phase 4: Run Database Migrations
 
-After pushing your Docker image to ECR, create the App Runner service via AWS Console or CLI:
-
-**Via AWS Console:**
-1. Go to AWS App Runner
-2. Click "Create service"
-3. Select "Container registry" → "Amazon ECR"
-4. Select your ECR repository and tag
-5. Configure service settings:
-   - Port: 8080
-   - Environment variables (from Secrets Manager)
-   - VPC connector (select the one created by CDK)
-   - Auto-scaling: 1-3 instances
-6. Review and create
-
-**Via CLI:**
+Option 1 - Run locally (for initial setup):
 ```bash
-# See AWS documentation for App Runner CLI commands
-# https://docs.aws.amazon.com/apprunner/latest/api/Welcome.html
+# Set environment variables
+export DATABASE_URL="jdbc:mysql://DB_ENDPOINT:3306/reconnoiter"
+export DATABASE_USERNAME="reconnoiter"
+export DATABASE_PASSWORD=$(aws secretsmanager get-secret-value \
+  --secret-id repo-reconnoiter-dev-db-credentials \
+  --query SecretString --output text | jq -r .password)
+
+# Run Flyway migrations
+./gradlew flywayMigrate
 ```
 
-### 5. Set Up API Gateway (Optional)
+Option 2 - Let ECS run migrations on startup (automatic).
 
-If you want to add rate limiting, caching, and custom domain:
+### Phase 5: Deploy ECS Service (Coming Soon)
 
-1. Create HTTP API Gateway
-2. Add integration to App Runner service URL
-3. Configure throttling settings
-4. Set up caching for GET endpoints
-5. Add custom domain name
+Once ECS infrastructure is added to the CDK stack, this will create:
+- ECS Fargate cluster
+- Task Definition with container configuration
+- ECS Service with auto-scaling
+- Application Load Balancer with HTTPS
 
 ## Useful CDK Commands
 
@@ -148,57 +160,61 @@ If you want to add rate limiting, caching, and custom domain:
 
 ## Cost Estimate
 
-**Development environment (~$30-45/month):**
-- RDS db.t3.micro: ~$15/month
-- App Runner (0.25 vCPU, 0.5GB): ~$15-25/month
-- NAT Gateway: ~$32/month (can be removed for dev)
-- HTTP API Gateway: ~$1-5/month
-- Data transfer: ~$1-5/month
+**Development environment (~$30/month):**
+- RDS Single-AZ db.t3.micro: ~$15/month
+- ECS Fargate (0.25 vCPU, 0.5GB): ~$15/month
+- NAT Gateway: ~$32/month (can be removed with VPC endpoints)
+- ALB: ~$20/month
 
-**Production environment (~$60-100/month):**
+**Production environment (~$87/month):**
 - RDS Multi-AZ db.t3.micro: ~$30/month
-- App Runner: ~$25-40/month
+- ECS Fargate: ~$15-25/month
 - NAT Gateway: ~$32/month
-- Other services: ~$5-10/month
+- ALB: ~$20/month
 
 **Cost optimization tips:**
-- Remove NAT Gateway in dev (use VPC endpoints instead)
+- Use VPC endpoints to avoid NAT Gateway ($32 savings)
 - Use Single-AZ RDS in dev
-- Set up auto-scaling to scale to zero when not in use
-- Use reserved instances for predictable workloads
+- Use RDS reserved instances (save 40%)
+- Scale down ECS task count during off-hours
 
 ## Environment Variables
 
-The following environment variables are set via Secrets Manager:
+The following environment variables are required for the application:
 
-- `DATABASE_URL` - PostgreSQL connection string
-- `DATABASE_USERNAME` - Database username
-- `DATABASE_PASSWORD` - Database password (from Secrets Manager)
-- `GITHUB_CLIENT_ID` - GitHub OAuth client ID
-- `GITHUB_CLIENT_SECRET` - GitHub OAuth client secret
-- `OPENAI_ACCESS_TOKEN` - OpenAI API key
-- `JWT_SECRET` - JWT signing secret
+**From Secrets Manager:**
+- `DATABASE_PASSWORD` - Database password (auto-generated)
+- `JWT_SECRET` - JWT signing secret (auto-generated)
+- `GITHUB_CLIENT_ID` - GitHub OAuth client ID (must set manually)
+- `GITHUB_CLIENT_SECRET` - GitHub OAuth client secret (must set manually)
+- `OPENAI_ACCESS_TOKEN` - OpenAI API key (must set manually)
+
+**Direct Environment Variables:**
 - `SPRING_PROFILES_ACTIVE` - Set to "prod"
+- `DATABASE_URL` - jdbc:mysql://DB_ENDPOINT:3306/reconnoiter
+- `DATABASE_USERNAME` - reconnoiter
+- `SERVER_PORT` - 8080
+- `APP_FRONTEND_URL` - Frontend URL for CORS
 
 ## Security
 
-- All secrets stored in AWS Secrets Manager
-- Database in private subnet with no public access
+- All secrets stored in AWS Secrets Manager with encryption
+- Database in private isolated subnet with no public access
 - Security groups restrict access to necessary ports only
+- ECS tasks in private subnet with NAT Gateway for outbound access
 - IAM roles follow principle of least privilege
-- Encrypted storage for RDS
-- Regular automated backups
+- RDS encrypted at rest with automated backups
 
 ## Monitoring
 
-CloudWatch logs are automatically configured for:
-- RDS PostgreSQL logs
-- App Runner application logs
-- API Gateway access logs (if configured)
+CloudWatch logs will be configured for:
+- RDS MySQL logs (error, general, slowquery)
+- ECS task logs (application stdout/stderr)
+- ALB access logs
 
-Access logs:
+Access logs (once ECS is deployed):
 ```bash
-aws logs tail /aws/apprunner/repo-reconnoiter-dev --follow
+aws logs tail /ecs/repo-reconnoiter-dev --follow
 ```
 
 ## Troubleshooting
@@ -207,20 +223,20 @@ aws logs tail /aws/apprunner/repo-reconnoiter-dev --follow
 - Check AWS credentials: `aws sts get-caller-identity`
 - Verify CDK bootstrap: `cdk bootstrap`
 - Check for conflicting resource names
-
-**App Runner service fails to start:**
-- Check CloudWatch logs
-- Verify all secrets are set correctly
-- Ensure Docker image is in ECR
-- Verify VPC connector configuration
+- Ensure TypeScript compiles: `npm run build`
 
 **Database connection fails:**
-- Check security groups
-- Verify VPC connector is attached to App Runner
+- Check security groups allow ECS → RDS on port 3306
+- Verify VPC subnet configuration
 - Confirm database credentials in Secrets Manager
+
+**Docker image push fails:**
+- Check ECR login: `aws ecr get-login-password`
+- Verify repository exists: `aws ecr describe-repositories`
+- Check IAM permissions for ECR
 
 ## Further Reading
 
 - [AWS CDK Documentation](https://docs.aws.amazon.com/cdk/v2/guide/home.html)
-- [AWS App Runner Documentation](https://docs.aws.amazon.com/apprunner/latest/dg/what-is-apprunner.html)
-- [HTTP API Gateway Documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html)
+- [AWS ECS Fargate Documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html)
+- [AWS RDS MySQL Documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html)
