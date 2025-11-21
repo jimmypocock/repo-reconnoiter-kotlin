@@ -81,7 +81,7 @@ The application supports environment-specific configurations:
 
 - **`dev`** (default): Verbose logging, SQL queries visible, safe dev defaults
 - **`prod`**: Minimal logging, requires all env vars to be set explicitly
-- **`console`**: No web server, database-only mode (for Gradle tasks and Shell)
+- **`console`**: No web server, database-only mode (for Gradle tasks)
 
 **Development** (default - web mode):
 ```bash
@@ -95,7 +95,7 @@ SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun  # Uses application-prod.yml
 
 **Console mode** (database tasks, no web server):
 ```bash
-# Automatically used by Gradle tasks (apiKeyList, shell, etc.)
+# Automatically used by Gradle tasks (apiKeyList, dbSeed, etc.)
 # Profile: dev,console
 # No Tomcat, no port 8080 conflict, database access only
 ```
@@ -209,48 +209,6 @@ docker-compose exec mysql mysql -u reconnoiter -pdevpassword reconnoiter_dev -e 
 ./gradlew dbSeed
 ```
 
-#### Interactive Shell (Rails Console-style)
-```bash
-# Launch interactive Spring Shell (like `rails console`)
-./gradlew shell
-
-# Then run commands interactively:
-shell:> help                    # Show available commands
-shell:> exit                    # Exit shell
-```
-
-**Available Shell Commands:**
-
-**API Key Commands:**
-```bash
-shell:> apikey list             # List all active API keys
-shell:> apikeys                 # Shorthand for apikey list
-shell:> apikey generate <name>  # Generate new API key
-shell:> apikey generate <name> --email user@example.com  # Generate for specific user
-shell:> apikey revoke <id>      # Revoke an API key by ID
-shell:> apikey stats            # Show API key statistics
-```
-
-**Whitelist Commands:**
-```bash
-shell:> whitelist list          # List all whitelisted users
-shell:> whitelisted             # Shorthand for whitelist list
-shell:> whitelist add <githubId> <username> [--email <email>] [--notes <notes>]
-shell:> whitelist remove <username>
-shell:> whitelist check <githubId>  # Check if GitHub ID is whitelisted
-```
-
-**Other Commands:**
-```bash
-shell:> help                    # Show all available commands
-shell:> history                 # Show command history
-shell:> clear                   # Clear screen
-shell:> exit                    # Exit shell
-```
-
-**Note:** Spring Shell loads the full application context (~37 seconds startup).
-For quick one-off commands, use Gradle tasks above instead.
-
 #### Other Useful Tasks
 ```bash
 # Display project info
@@ -260,7 +218,6 @@ For quick one-off commands, use Gradle tasks above instead.
 ./gradlew tasks --group api_keys
 ./gradlew tasks --group whitelist
 ./gradlew tasks --group database
-./gradlew tasks --group application  # Includes 'shell' task
 ```
 
 ## Project Structure
@@ -278,12 +235,6 @@ src/
 │   │   │   ├── DatabaseSeeder.kt     # Database seeding
 │   │   │   ├── AuthService.kt        # Authentication
 │   │   │   └── GitHubService.kt      # GitHub API wrapper
-│   │   ├── shell/commands/ # Spring Shell commands (interactive console)
-│   │   │   ├── ApiKeyCommands.kt     # Shell: apikey list, generate, etc.
-│   │   │   ├── WhitelistCommands.kt  # Shell: whitelist add, remove, etc.
-│   │   │   ├── CategoryCommands.kt   # Shell: category commands
-│   │   │   ├── RepositoryCommands.kt # Shell: repository commands
-│   │   │   └── UserCommands.kt       # Shell: user commands
 │   │   ├── tasks/runners/  # Gradle task runners (one-off commands)
 │   │   │   ├── ApiKeyListRunner.kt   # Gradle: apiKeyList
 │   │   │   ├── ApiKeyGenerateRunner.kt
@@ -304,9 +255,8 @@ src/
 
 **Architecture Pattern:**
 - **Service Layer**: Business logic (ApiKeyService, WhitelistService, etc.)
-- **Shell Commands**: Interactive console (calls services)
-- **Task Runners**: One-off Gradle tasks (calls services)
-- **No Code Duplication**: Both shell and tasks use the same services
+- **Task Runners**: One-off Gradle tasks (call services for admin operations)
+- **Controllers**: REST API endpoints (use services for business logic)
 
 ## API Endpoints
 
@@ -438,6 +388,50 @@ cd cdk
 npm run deploy:api
 ```
 
+**Using Gradle Tasks (For Seeding from JSON Files):**
+
+The production Docker image includes Gradle and JDK for running admin tasks via ECS Exec.
+
+```bash
+# 1. Get running task ID
+aws ecs list-tasks --cluster repo-reconnoiter-prod --service-name repo-reconnoiter-prod
+
+# 2. Connect to container
+aws ecs execute-command \
+  --cluster repo-reconnoiter-prod \
+  --task <TASK_ID> \
+  --container repo-reconnoiter-api \
+  --interactive \
+  --command "/bin/bash"
+
+# 3. Inside container - Run Gradle tasks with memory limits
+# IMPORTANT: Use --no-daemon and limit heap to prevent OOM kills
+
+# Seed database from JSON files
+./gradlew --no-daemon \
+  -Dorg.gradle.jvmargs="-Xmx768m -XX:MaxMetaspaceSize=256m" \
+  dbSeed
+
+# Generate API key
+./gradlew --no-daemon \
+  -Dorg.gradle.jvmargs="-Xmx768m -XX:MaxMetaspaceSize=256m" \
+  apiKeyGenerate -Pname="Production Key"
+
+# Add user to whitelist
+./gradlew --no-daemon \
+  -Dorg.gradle.jvmargs="-Xmx768m -XX:MaxMetaspaceSize=256m" \
+  whitelistAdd -PgithubId=<ID> -Pusername="<USERNAME>" -Pemail="<EMAIL>"
+
+# Exit container
+exit
+```
+
+**Why memory limits are required:**
+- Container has 2GB RAM (configured in `cdk/lib/api-stack.ts`)
+- Spring Boot app uses ~400MB
+- Without limits, Gradle tries to allocate 2GB heap and gets OOM killed
+- With `-Xmx768m`, Gradle + Spring Boot fit within 2GB limit (~1.2GB total)
+
 **Direct Database Access:**
 
 ```bash
@@ -452,8 +446,7 @@ aws ecs execute-command \
 # Then: mysql -h <RDS_HOST> -u reconnoiter -p
 
 # Option 2: Connect directly from local machine
-# (Requires adding your IP to RDS security group)
-mysql -h <RDS_ENDPOINT> -u reconnoiter -p
+# (Not possible - RDS is in isolated subnet with no internet access)
 ```
 
 ### Key Configuration Notes

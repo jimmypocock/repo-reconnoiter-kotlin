@@ -47,9 +47,6 @@ dependencies {
 	// Sentry error tracking (production only - disabled in dev)
 	implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.22.0")
 
-	// Spring Shell (interactive console like Rails console)
-	implementation("org.springframework.shell:spring-shell-starter:3.3.3")
-
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
