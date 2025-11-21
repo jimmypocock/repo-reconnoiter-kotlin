@@ -1,0 +1,114 @@
+
+> repo-reconnoiter-cdk@1.0.0 deploy:app
+> bash -c 'source .env && cdk deploy App-$ENVIRONMENT'
+
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+Including dependency stacks: Network-prod, SecurityGroups-prod, Database-prod
+[Warning at /App-prod/ECSService] minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]
+
+✨  Synthesis time: 5.37s
+
+Network-prod
+Network-prod: deploying... [1/4]
+
+ ✅  Network-prod (no changes)
+
+✨  Deployment time: 0.71s
+
+Outputs:
+Network-prod.DatabaseSubnetIds = subnet-0420377c42c62d4af,subnet-0b5ac9a75d3b12936
+Network-prod.ExportsOutputRefVPCB9E5F0B4BD23A326 = vpc-03df97a58f1a7805f
+Network-prod.ExportsOutputRefVPCDatabaseSubnet1Subnet3E790B6FCC2F250A = subnet-0420377c42c62d4af
+Network-prod.ExportsOutputRefVPCDatabaseSubnet2Subnet93B13DD5FBB3CDD7 = subnet-0b5ac9a75d3b12936
+Network-prod.ExportsOutputRefVPCPrivateSubnet1Subnet8BCA10E01F79A1B7 = subnet-0fad15291f3f8baa3
+Network-prod.ExportsOutputRefVPCPrivateSubnet2SubnetCFCDAA7AB22CF85D = subnet-04bdb84f8b1a1960b
+Network-prod.ExportsOutputRefVPCPublicSubnet1SubnetB4246D30D84F935B = subnet-055e8fd114f1a3549
+Network-prod.ExportsOutputRefVPCPublicSubnet2Subnet74179F3969CC10AD = subnet-0d852362045f900cb
+Network-prod.PrivateSubnetIds = subnet-0fad15291f3f8baa3,subnet-04bdb84f8b1a1960b
+Network-prod.PublicSubnetIds = subnet-055e8fd114f1a3549,subnet-0d852362045f900cb
+Network-prod.VpcId = vpc-03df97a58f1a7805f
+Stack ARN:
+arn:aws:cloudformation:us-east-1:626635410245:stack/Network-prod/493c5590-c68b-11f0-83a6-12f8f3b3f4f3
+
+✨  Total time: 6.08s
+
+SecurityGroups-prod
+SecurityGroups-prod: deploying... [2/4]
+
+ ✅  SecurityGroups-prod (no changes)
+
+✨  Deployment time: 0.44s
+
+Outputs:
+SecurityGroups-prod.ALBSecurityGroupId = sg-006fd295aaabe6864
+SecurityGroups-prod.DatabaseSecurityGroupId = sg-0ed8833e2c94f2244
+SecurityGroups-prod.ECSSecurityGroupId = sg-01703225053b34222
+SecurityGroups-prod.ExportsOutputFnGetAttALBSecurityGroup29A3BDEFGroupId2A9BC0BF = sg-006fd295aaabe6864
+SecurityGroups-prod.ExportsOutputFnGetAttDatabaseSecurityGroup7319C0F6GroupId72A1B827 = sg-0ed8833e2c94f2244
+SecurityGroups-prod.ExportsOutputFnGetAttECSSecurityGroupA14DBE7DGroupIdF26764D6 = sg-01703225053b34222
+Stack ARN:
+arn:aws:cloudformation:us-east-1:626635410245:stack/SecurityGroups-prod/5b03eb70-c68c-11f0-94ea-0e42a576e067
+
+✨  Total time: 5.81s
+
+Database-prod
+Database-prod: deploying... [3/4]
+Database-prod: creating CloudFormation changeset...
+
+ ✅  Database-prod (no changes)
+
+✨  Deployment time: 2.24s
+
+Outputs:
+Database-prod.DatabaseEndpoint = repo-reconnoiter-prod-db.c2bswusm4658.us-east-1.rds.amazonaws.com
+Database-prod.DatabasePort = 3306
+Database-prod.DatabaseSecretArn = arn:aws:secretsmanager:us-east-1:626635410245:secret:repo-reconnoiter-prod-db-credentials-a07fZm
+Database-prod.ExportsOutputFnGetAttDatabaseB269D8BBEndpointAddressA4DBD059 = repo-reconnoiter-prod-db.c2bswusm4658.us-east-1.rds.amazonaws.com
+Database-prod.ExportsOutputRefDatabaseSecret86DBB7B353068790 = arn:aws:secretsmanager:us-east-1:626635410245:secret:repo-reconnoiter-prod-db-credentials-a07fZm
+Stack ARN:
+arn:aws:cloudformation:us-east-1:626635410245:stack/Database-prod/cba69b20-c68c-11f0-886b-0eaca1b929e5
+
+✨  Total time: 7.61s
+
+App-prod
+Stack App-prod
+IAM Statement Changes
+┌───┬────────────────────────────────────────────────────────────────────────────────────┬────────┬──────────────────────────────────┬─────────────────────────────────┬───────────┐
+│   │ Resource                                                                           │ Effect │ Action                           │ Principal                       │ Condition │
+├───┼────────────────────────────────────────────────────────────────────────────────────┼────────┼──────────────────────────────────┼─────────────────────────────────┼───────────┤
+│ + │ ${ECRRepository.Arn}                                                               │ Allow  │ ecr:BatchCheckLayerAvailability  │ AWS:${TaskExecutionRole}        │           │
+│   │                                                                                    │        │ ecr:BatchGetImage                │                                 │           │
+│   │                                                                                    │        │ ecr:GetDownloadUrlForLayer       │                                 │           │
+├───┼────────────────────────────────────────────────────────────────────────────────────┼────────┼──────────────────────────────────┼─────────────────────────────────┼───────────┤
+│ + │ ${ECSLogGroup.Arn}                                                                 │ Allow  │ logs:CreateLogStream             │ AWS:${TaskExecutionRole}        │           │
+│   │                                                                                    │        │ logs:PutLogEvents                │                                 │           │
+├───┼────────────────────────────────────────────────────────────────────────────────────┼────────┼──────────────────────────────────┼─────────────────────────────────┼───────────┤
+│ + │ ${GitHubOAuthSecret}                                                               │ Allow  │ secretsmanager:DescribeSecret    │ AWS:${TaskExecutionRole}        │           │
+│   │ ${JWTSecretF6F1CBF0}                                                               │        │ secretsmanager:GetSecretValue    │                                 │           │
+│   │ ${OpenAISecret}                                                                    │        │                                  │                                 │           │
+│   │ {"Fn::ImportValue":"Database-prod:ExportsOutputRefDatabaseSecret86DBB7B353068790"} │        │                                  │                                 │           │
+├───┼────────────────────────────────────────────────────────────────────────────────────┼────────┼──────────────────────────────────┼─────────────────────────────────┼───────────┤
+│ + │ ${TaskExecutionRole.Arn}                                                           │ Allow  │ sts:AssumeRole                   │ Service:ecs-tasks.amazonaws.com │           │
+├───┼────────────────────────────────────────────────────────────────────────────────────┼────────┼──────────────────────────────────┼─────────────────────────────────┼───────────┤
+│ + │ ${TaskRole.Arn}                                                                    │ Allow  │ sts:AssumeRole                   │ Service:ecs-tasks.amazonaws.com │           │
+├───┼────────────────────────────────────────────────────────────────────────────────────┼────────┼──────────────────────────────────┼─────────────────────────────────┼───────────┤
+│ + │ *                                                                                  │ Allow  │ ecr:GetAuthorizationToken        │ AWS:${TaskExecutionRole}        │           │
+│ + │ *                                                                                  │ Allow  │ logs:CreateLogStream             │ AWS:${TaskRole}                 │           │
+│   │                                                                                    │        │ logs:DescribeLogGroups           │                                 │           │
+│   │                                                                                    │        │ logs:DescribeLogStreams          │                                 │           │
+│   │                                                                                    │        │ logs:PutLogEvents                │                                 │           │
+│   │                                                                                    │        │ ssmmessages:CreateControlChannel │                                 │           │
+│   │                                                                                    │        │ ssmmessages:CreateDataChannel    │                                 │           │
+│   │                                                                                    │        │ ssmmessages:OpenControlChannel   │                                 │           │
+│   │                                                                                    │        │ ssmmessages:OpenDataChannel      │                                 │           │
+└───┴────────────────────────────────────────────────────────────────────────────────────┴────────┴──────────────────────────────────┴─────────────────────────────────┴───────────┘
+IAM Policy Changes
+┌───┬──────────────────────┬─────────────────────────────────────────────────────────────────────────────────────┐
+│   │ Resource             │ Managed Policy ARN                                                                  │
+├───┼──────────────────────┼─────────────────────────────────────────────────────────────────────────────────────┤
+│ + │ ${TaskExecutionRole} │ arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy │
+└───┴──────────────────────┴─────────────────────────────────────────────────────────────────────────────────────┘
+(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)
+
+
+"--require-approval" is enabled and stack includes security-sensitive updates, but terminal (TTY) is not attached so we are unable to get a confirmation from the user

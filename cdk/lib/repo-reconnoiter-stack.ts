@@ -202,7 +202,7 @@ export class RepoReconnoiterStack extends cdk.Stack {
     const cluster = new ecs.Cluster(this, 'ECSCluster', {
       clusterName: `repo-reconnoiter-${environmentName}`,
       vpc,
-      containerInsights: true, // CloudWatch Container Insights for monitoring
+      containerInsightsV2: ecs.ContainerInsights.ENHANCED, // CloudWatch Container Insights with enhanced observability
     });
 
     // ============================================
@@ -260,6 +260,8 @@ export class RepoReconnoiterStack extends cdk.Stack {
         SERVER_PORT: '8080',
         DATABASE_URL: `jdbc:mysql://${database.dbInstanceEndpointAddress}:3306/reconnoiter`,
         DATABASE_USERNAME: 'reconnoiter',
+        APP_FRONTEND_URL: 'https://reporeconnoiter.com', // Frontend URL for CORS and OAuth redirects
+        SENTRY_DSN: 'https://placeholder@sentry.io/placeholder', // Update with real Sentry DSN later
       },
       secrets: {
         DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'),
@@ -418,7 +420,13 @@ export class RepoReconnoiterStack extends cdk.Stack {
     // CRITICAL: Alarm when all ECS tasks are down (app completely unavailable)
     const zeroTasksAlarm = new cloudwatch.Alarm(this, 'ZeroTasksAlarm', {
       alarmName: `${environmentName}-zero-ecs-tasks`,
-      metric: service.metricRunningTaskCount({
+      metric: new cloudwatch.Metric({
+        namespace: 'AWS/ECS',
+        metricName: 'RunningTaskCount',
+        dimensionsMap: {
+          ServiceName: service.serviceName,
+          ClusterName: cluster.clusterName,
+        },
         statistic: 'Average',
         period: cdk.Duration.minutes(1),
       }),

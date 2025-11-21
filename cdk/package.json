@@ -9,6 +9,12 @@
     "cdk": "cdk",
     "diff": "cdk diff",
     "deploy": "cdk deploy",
+    "deploy:network": "bash -c 'source .env && cdk deploy RepoReconnoiter-Network-$ENVIRONMENT'",
+    "deploy:security-groups": "bash -c 'source .env && cdk deploy RepoReconnoiter-SecurityGroups-$ENVIRONMENT'",
+    "deploy:database": "bash -c 'source .env && cdk deploy RepoReconnoiter-Database-$ENVIRONMENT'",
+    "deploy:api": "bash -c 'source .env && cdk deploy RepoReconnoiter-API-$ENVIRONMENT'",
+    "deploy:api:fresh": "bash -c 'source .env && cdk deploy RepoReconnoiter-API-$ENVIRONMENT --context desiredCount=0'",
+    "deploy:all": "bash -c 'source .env && cdk deploy RepoReconnoiter-Network-$ENVIRONMENT RepoReconnoiter-SecurityGroups-$ENVIRONMENT RepoReconnoiter-Database-$ENVIRONMENT RepoReconnoiter-API-$ENVIRONMENT'",
     "destroy": "cdk destroy",
     "synth": "cdk synth"
   },
@@ -20,13 +26,14 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "aws-cdk": "^2.162.0",
+    "@types/node": "^22.19.1",
+    "aws-cdk": "^2.224.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.0"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.162.0",
-    "constructs": "^10.3.0"
+    "aws-cdk-lib": "^2.224.0",
+    "constructs": "^10.3.0",
+    "dotenv": "^17.2.3"
   }
 }

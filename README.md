@@ -373,6 +373,108 @@ Content-Type: application/json
 **Health Check (No Auth):**
 - `GET /api/v1/actuator/health` - Health status
 
+## AWS Production Deployment
+
+### Architecture
+
+**Production Infrastructure:**
+- **ECS Fargate** - Serverless containers (0.5 vCPU, 1GB RAM)
+- **RDS MySQL 8.0** - Managed database (db.t3.micro, 20GB storage)
+- **Application Load Balancer** - HTTPS traffic with health checks
+- **ECR** - Docker container registry
+- **Secrets Manager** - Encrypted credentials storage
+- **CloudWatch** - Logging, monitoring, and alarms
+
+### Deployment Workflow
+
+**Fresh Deployment (After Infrastructure Teardown):**
+
+```bash
+# 1. Deploy infrastructure with 0 tasks (waits for Docker image)
+cd cdk
+npm run deploy:api:fresh  # Uses --context desiredCount=0
+
+# 2. Build and push Docker image (from project root)
+cd ..
+docker build --platform linux/amd64 -t repo-reconnoiter:latest .
+
+# Get ECR URI from CloudFormation outputs
+docker tag repo-reconnoiter:latest <ECR_URI>:latest
+docker tag repo-reconnoiter:latest <ECR_URI>:v1.0.0
+
+# Login and push
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ECR_URI>
+docker push <ECR_URI>:latest
+docker push <ECR_URI>:v1.0.0
+
+# 3. Redeploy with tasks (production-ready default: 2 tasks)
+cd cdk
+npm run deploy:api  # Defaults to desiredCount=2
+```
+
+**Normal Deployments (Code Changes):**
+
+```bash
+# Code is production-ready by default - just deploy
+cd cdk
+npm run deploy:api
+```
+
+The CDK code defaults to `desiredCount: 2` (production-ready), but can be overridden with `--context desiredCount=0` for fresh deployments.
+
+### Database Seeding (Production)
+
+**Using Flyway Migrations (Recommended):**
+
+```bash
+# 1. Create seed migration
+# File: src/main/resources/db/migration/V17__seed_categories.sql
+INSERT INTO categories (name, category_type, description, created_at, updated_at) VALUES
+('Ruby', 'LANGUAGE', 'Ruby programming language', NOW(), NOW()),
+('Python', 'LANGUAGE', 'Python programming language', NOW(), NOW());
+
+# 2. Redeploy API - Flyway runs migrations on container startup automatically
+cd cdk
+npm run deploy:api
+```
+
+**Direct Database Access:**
+
+```bash
+# Option 1: ECS Exec into running container
+aws ecs execute-command \
+  --cluster repo-reconnoiter-prod \
+  --task <TASK_ID> \
+  --container repo-reconnoiter-api \
+  --interactive \
+  --command "/bin/bash"
+
+# Then: mysql -h <RDS_HOST> -u reconnoiter -p
+
+# Option 2: Connect directly from local machine
+# (Requires adding your IP to RDS security group)
+mysql -h <RDS_ENDPOINT> -u reconnoiter -p
+```
+
+### Key Configuration Notes
+
+**Health Check Paths:**
+- ALB health check: `/api/v1/actuator/health`
+- Container health check: `http://localhost:8080/api/v1/actuator/health`
+- Spring Boot context path: `/api/v1` (must be included in health check paths)
+
+**Platform Requirements:**
+- ECS Fargate requires `linux/amd64` Docker images
+- M-series Macs must use `--platform linux/amd64` flag (slower but required)
+- Production CI/CD (GitHub Actions) runs on AMD64 natively
+
+**Stack Architecture:**
+- Modular CDK stacks: Network → SecurityGroups → Database → API
+- Clean deletion supported (no RETAIN policies except production RDS snapshots)
+- SNS email notifications for CloudWatch alarms (requires confirmation)
+
+See **[cdk/README.md](cdk/README.md)** and **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** for detailed deployment instructions.
+
 ## Reference Implementation
 
 This is a port of the Rails API found in the parent directory.

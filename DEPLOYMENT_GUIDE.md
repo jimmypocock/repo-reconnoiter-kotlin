@@ -1,5 +1,107 @@
 # AWS Deployment Game Plan
 
+## Deployment Status
+
+✅ **SUCCESSFULLY DEPLOYED TO PRODUCTION**
+- **Date:** November 21, 2025
+- **Environment:** Production (repo-reconnoiter-prod)
+- **API URL:** `http://repo-reconnoiter-prod-1421305048.us-east-1.elb.amazonaws.com`
+- **Status:** 2 healthy ECS tasks running, ALB health checks passing
+
+## Lessons Learned
+
+### Critical Health Check Configuration
+
+**Problem:** ECS tasks were RUNNING but UNHEALTHY, causing CloudFormation to hang during deployment.
+
+**Root Cause:** Spring Boot uses context path `/api/v1`, but health checks were configured for `/actuator/health` (wrong path).
+
+**Solution:** Updated both health checks to include context path:
+- ALB Target Group: `/api/v1/actuator/health`
+- Container Health Check: `curl -f http://localhost:8080/api/v1/actuator/health`
+
+**Key Takeaway:** Infrastructure health checks must match application routing configuration. Spring Boot's `server.servlet.context-path` affects all endpoints including actuator.
+
+### Professional Two-Phase Deployment Pattern
+
+**Challenge:** CloudFormation can't deploy ECS service before Docker image exists in ECR.
+
+**Solution:** Use CDK context variable for `desiredCount`:
+```typescript
+const desiredCount = this.node.tryGetContext('desiredCount') ?? 2;
+```
+
+**Workflow:**
+1. **Fresh deployment:** `npm run deploy:api:fresh` (desiredCount: 0)
+2. **Build and push:** Docker image to ECR
+3. **Scale up:** `npm run deploy:api` (desiredCount: 2, production default)
+
+**Benefits:**
+- Code is production-ready by default (no code changes needed)
+- Override available for fresh deployments (`--context desiredCount=0`)
+- No stuck CloudFormation deployments waiting for non-existent images
+
+### Docker Platform Requirements
+
+**Problem:** ECS tasks fail with `CannotPullContainerError` on Apple Silicon Macs.
+
+**Root Cause:** Docker images built on M-series Macs default to ARM64, but ECS Fargate requires AMD64.
+
+**Solution:** Always use `--platform linux/amd64` flag:
+```bash
+docker build --platform linux/amd64 -t repo-reconnoiter:latest .
+```
+
+**Future:** Set up GitHub Actions CI/CD (runs on AMD64 natively, no platform issues).
+
+### CloudWatch Alarm Configuration
+
+**Problem:** Emojis in alarm descriptions cause CloudFormation deployment failure.
+
+**Error:** `AlarmDescription must not contain restricted XML characters`
+
+**Solution:** Use text markers instead: `[CRITICAL]` and `[WARNING]`
+
+**Takeaway:** CloudWatch stores alarm descriptions as XML - avoid emojis and special characters.
+
+### SNS Topic Drift
+
+**Problem:** CloudWatch alarms show "We could not find the SNS topic" warning despite CloudFormation showing `CREATE_COMPLETE`.
+
+**Root Cause:** SNS topic was manually deleted but CloudFormation state wasn't updated (drift).
+
+**Solution:** Manually recreate topic matching CloudFormation's expected ARN, then resubscribe email.
+
+**Prevention:** Use `cdk destroy` instead of manually deleting resources.
+
+### Stack Naming and Organization
+
+**Architecture:** Modular CDK stacks for clean separation of concerns:
+- `RepoReconnoiter-Network-prod` - VPC, subnets, NAT Gateway
+- `RepoReconnoiter-SecurityGroups-prod` - ALB, ECS, and RDS security groups
+- `RepoReconnoiter-Database-prod` - RDS MySQL with CloudWatch alarms
+- `RepoReconnoiter-API-prod` - ECS Fargate, ALB, ECR, CloudWatch logs
+
+**Benefits:**
+- Independent stack updates (can update API without touching database)
+- Clean deletion (drop stacks in reverse dependency order)
+- Clear resource ownership and naming conventions
+
+### Database Seeding Strategy
+
+**Recommended:** Flyway versioned migrations (`V17__seed_categories.sql`)
+- Runs automatically on container startup
+- Version controlled and repeatable
+- Integrates with existing migration workflow
+
+**Alternative:** Direct database access via ECS Exec or MySQL client
+- Useful for testing and ad-hoc operations
+- Requires temporary security group rules for external access
+
+**Key Insight:** Kotlin/Spring Boot follows infrastructure-as-code principles - use Flyway migrations for seeding rather than custom Gradle tasks.
+
+---
+
 ## Project Context (For Fresh Claude Instance)
 
 ### What We're Deploying
@@ -131,44 +233,86 @@ ALLOWED_ORIGINS=https://yourdomain.com
 - [ ] CDK CLI installed: `npm install -g aws-cdk`
 - [ ] Bootstrap CDK: `cdk bootstrap aws://ACCOUNT-ID/us-east-1`
 
-### Phase 1: Deploy CDK Infrastructure (~10 minutes)
+### Phase 1: Verify CDK Environment Variables (~5 minutes)
+
+**⚠️ CRITICAL: Verify all required environment variables are configured in CDK task definition**
+
+Check `cdk/lib/repo-reconnoiter-stack.ts` includes ALL required variables:
+
+**Required Environment Variables:**
+- [ ] `SPRING_PROFILES_ACTIVE` = prod
+- [ ] `SERVER_PORT` = 8080
+- [ ] `DATABASE_URL` = jdbc:mysql://[RDS_ENDPOINT]:3306/reconnoiter
+- [ ] `DATABASE_USERNAME` = reconnoiter
+- [ ] `APP_FRONTEND_URL` = https://reporeconnoiter.com (or your frontend URL)
+- [ ] `SENTRY_DSN` = https://placeholder@sentry.io/placeholder (update later)
+
+**Required Secrets (from Secrets Manager):**
+- [ ] `DATABASE_PASSWORD` (from dbSecret)
+- [ ] `JWT_SECRET` (from jwtSecret)
+- [ ] `GITHUB_CLIENT_ID` (from githubSecret)
+- [ ] `GITHUB_CLIENT_SECRET` (from githubSecret)
+- [ ] `OPENAI_ACCESS_TOKEN` (from openaiSecret)
+
+**Common Pitfalls:**
+- ❌ Missing `SENTRY_DSN` → App crashes on startup with "Could not resolve placeholder"
+- ❌ Missing `APP_FRONTEND_URL` → OAuth redirects fail, CORS errors
+
+### Phase 2: Build and Push Docker Image FIRST (~10 minutes)
+
+**⚠️ IMPORTANT: Push Docker image BEFORE deploying ECS service!**
+
+ECS service won't stabilize until a valid image exists in ECR. Deploying infrastructure first will cause CloudFormation to wait/timeout.
+
+**For Apple Silicon Macs (M1/M2/M3):**
+- ECS Fargate requires `linux/amd64` images (x86_64 architecture)
+- M-series Macs default to `linux/arm64` builds
+- Must use `--platform linux/amd64` flag (uses QEMU emulation, slower build)
+
+**Commands:**
+- [ ] Go to project root: `cd /path/to/repo-reconnoiter-kotlin`
+- [ ] Load AWS credentials: `source cdk/.env && export $(grep -v '^#' cdk/.env | xargs)`
+- [ ] Login to ECR: `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 626635410245.dkr.ecr.us-east-1.amazonaws.com`
+- [ ] Build and push for AMD64: `docker buildx build --platform linux/amd64 --push -t 626635410245.dkr.ecr.us-east-1.amazonaws.com/repo-reconnoiter-prod:latest .`
+- [ ] Verify image: `aws ecr describe-images --repository-name repo-reconnoiter-prod`
+
+**Note:** Docker containers are NOT virtual machines - they share the host kernel and must match the target architecture. In production, use CI/CD (GitHub Actions on AMD64 runners) to avoid platform mismatch issues.
+
+### Phase 3: Deploy CDK Infrastructure (~10-15 minutes)
 - [ ] Install CDK dependencies: `cd cdk && npm install`
 - [ ] Build CDK: `npm run build`
-- [ ] Preview changes: `npm run diff -- -c environment=dev`
-- [ ] Deploy stack: `npm run deploy -- -c environment=dev`
-- [ ] Save outputs (ECR URI, RDS endpoint, Secret ARNs)
+- [ ] Preview changes: `npm run diff`
+- [ ] Deploy stack: `npm run deploy`
+- [ ] Save outputs (ECR URI, RDS endpoint, Secret ARNs, ALB URL)
 
-### Phase 2: Configure Secrets (~5 minutes)
+### Phase 4: Configure Secrets (~5 minutes)
 - [ ] Update GitHub OAuth secret (see commands in CDK README)
 - [ ] Update OpenAI API key secret (see commands in CDK README)
 - [ ] Verify secrets: `aws secretsmanager list-secrets | grep repo-reconnoiter`
 
-### Phase 3: Build and Push Docker Image (~5 minutes)
-- [ ] Authenticate to ECR: `aws ecr get-login-password | docker login...`
-- [ ] Build image: `docker build -t repo-reconnoiter .`
-- [ ] Tag image: `docker tag repo-reconnoiter:latest ECR_URI:latest`
-- [ ] Push image: `docker push ECR_URI:latest`
-- [ ] Verify image: `aws ecr list-images --repository-name repo-reconnoiter-dev`
-
-### Phase 4: Run Database Migrations (~5 minutes)
+### Phase 5: Run Database Migrations (~5 minutes)
 - [ ] Get DB password from Secrets Manager
 - [ ] Run Flyway migrations locally (or let ECS run on startup)
 - [ ] Verify migrations: Connect to RDS and check `flyway_schema_history`
 
-### Phase 5: Deploy ECS Service (Automatic via CDK)
+### Phase 6: Verify ECS Service (Automatic via CDK)
 - [ ] ECS service automatically created by CDK
 - [ ] Tasks start and pull Docker image from ECR
 - [ ] Health checks pass at `/actuator/health`
 - [ ] ALB routes traffic to healthy tasks
 
-### Phase 6: Verify Deployment (~10 minutes)
+### Phase 7: Verify Deployment (~10 minutes)
 - [ ] Check ECS service status: `aws ecs describe-services...`
 - [ ] Check ECS task health: `aws ecs describe-tasks...`
 - [ ] View logs: `aws logs tail /ecs/repo-reconnoiter-dev --follow`
 - [ ] Test health endpoint: `curl https://ALB_URL/actuator/health`
 - [ ] Test API endpoint: `curl -H "Authorization: Bearer API_KEY" https://ALB_URL/api/v1/repositories`
 
-### Phase 7: Production Readiness (~5 minutes)
+### Phase 8: Production Readiness (~5 minutes)
+- [ ] Add ACM SSL certificate to ALB (manual in AWS Console)
+- [ ] Configure HTTP → HTTPS redirect in ALB listener (port 80 → 443)
+  - Update CDK: Change `httpListener.addTargets()` to `httpListener.addAction()` with redirect
+  - Keep port 80 open on security group (for redirect, not direct access)
 - [ ] Generate production API keys
 - [ ] Verify Sentry error tracking works
 - [ ] Set up CloudWatch alarms (optional but recommended)
@@ -589,13 +733,320 @@ aws ecs update-service --cluster <cluster> --service <service> \
 - Review costs
 - Set up automated backups beyond RDS
 - Document runbooks
-- Plan for CI/CD pipeline
+- **Set up CI/CD pipeline (GitHub Actions)** - See section below ⬇️
 
 **Month 1:**
 - Performance optimization
 - Security audit
 - Disaster recovery testing
 - Cost optimization review
+
+---
+
+## CI/CD Setup (Post-Deployment Goal)
+
+**Why GitHub Actions?**
+- ✅ Runs on AMD64 runners (no platform mismatch issues)
+- ✅ Automated deployments on `git push`
+- ✅ Consistent, repeatable process
+- ✅ Secrets management via GitHub Secrets
+- ✅ Audit trail for all deployments
+
+### Setup Steps
+
+**1. Create IAM User for GitHub Actions**
+```bash
+# Create IAM user with programmatic access
+aws iam create-user --user-name github-actions-ecs-deploy
+
+# Attach policies for ECR and ECS access
+aws iam attach-user-policy \
+  --user-name github-actions-ecs-deploy \
+  --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+
+aws iam attach-user-policy \
+  --user-name github-actions-ecs-deploy \
+  --policy-arn arn:aws:iam::aws:policy/AmazonECS_FullAccess
+
+# Create access key
+aws iam create-access-key --user-name github-actions-ecs-deploy
+# Save the AccessKeyId and SecretAccessKey!
+```
+
+**2. Add GitHub Secrets** (Settings → Secrets and variables → Actions → New repository secret):
+- `AWS_ACCESS_KEY_ID` - IAM user access key ID
+- `AWS_SECRET_ACCESS_KEY` - IAM user secret access key
+- `AWS_REGION` - us-east-1
+- `ECR_REPOSITORY` - repo-reconnoiter-prod
+- `ECS_CLUSTER` - repo-reconnoiter-prod
+- `ECS_SERVICE` - repo-reconnoiter-prod
+
+**3. Create `.github/workflows/deploy.yml`:**
+```yaml
+name: Deploy to AWS ECS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # AMD64, no platform issues!
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Deploy to ECS
+        env:
+          ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+          ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment
+
+      - name: Wait for deployment to complete
+        env:
+          ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+          ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+        run: |
+          aws ecs wait services-stable \
+            --cluster $ECS_CLUSTER \
+            --services $ECS_SERVICE
+```
+
+**4. Test the workflow:**
+- Push a commit to `main` branch
+- Go to GitHub Actions tab
+- Watch the deployment run
+- Verify new tasks started in ECS
+
+### Benefits of CI/CD
+
+✅ **No platform issues** - GitHub runners are AMD64, no need for `--platform` flag
+✅ **Faster builds** - Native AMD64, no QEMU emulation
+✅ **Git SHA tagging** - Every image tagged with commit SHA for easy rollback
+✅ **Automatic deployments** - Push to main = auto deploy
+✅ **Zero local setup** - New team members just push code
+
+### Rollback with Git SHA Tags
+
+If a deployment fails, rollback to previous version:
+```bash
+# List recent images
+aws ecr describe-images --repository-name repo-reconnoiter-prod \
+  --query 'sort_by(imageDetails,& imagePushedAt)[-10:].[imageTags[0],imagePushedAt]' \
+  --output table
+
+# Update ECS to use specific SHA
+aws ecs update-service \
+  --cluster repo-reconnoiter-prod \
+  --service repo-reconnoiter-prod \
+  --task-definition repo-reconnoiter-prod \
+  --force-new-deployment \
+  --override taskDefinition with specific image SHA
+```
+
+---
+
+## Troubleshooting Common Issues
+
+### Issue 1: CloudFormation stuck waiting for ECS service
+
+**Symptoms:**
+- CDK deployment at 57/63 resources for 90+ minutes
+- ECS service shows `DesiredCount: 2, RunningCount: 0`
+- Tasks keep failing and restarting
+
+**Diagnosis:**
+```bash
+# Check ECS service status
+aws ecs describe-services \
+  --cluster repo-reconnoiter-prod \
+  --services repo-reconnoiter-prod \
+  --query 'services[0].{Status:status,Running:runningCount,Desired:desiredCount,Events:events[0:2]}'
+
+# Check why tasks are failing
+aws logs tail /ecs/repo-reconnoiter-prod --follow --since 10m
+```
+
+**Common Causes:**
+
+**A) Missing Docker image** (CannotPullContainerError)
+```
+Error: "image Manifest does not contain descriptor matching platform 'linux/amd64'"
+```
+**Solution:** Build Docker image with correct platform flag:
+```bash
+docker buildx build --platform linux/amd64 --push \
+  -t 626635410245.dkr.ecr.us-east-1.amazonaws.com/repo-reconnoiter-prod:latest .
+```
+
+**B) Missing environment variable** (Application startup failure)
+```
+Error: "Could not resolve placeholder 'SENTRY_DSN' in value \"${SENTRY_DSN}\""
+```
+**Solution:** Add missing variable to CDK task definition:
+```typescript
+environment: {
+  SENTRY_DSN: 'https://placeholder@sentry.io/placeholder',
+  APP_FRONTEND_URL: 'https://reporeconnoiter.com',
+  // ... other vars
+}
+```
+
+**C) Database connection failure**
+```
+Error: "Connection refused" or "Unknown host"
+```
+**Solution:** Check security group allows ECS → RDS on port 3306
+
+### Issue 2: Platform mismatch (Apple Silicon)
+
+**Error:**
+```
+CannotPullContainerError: image Manifest does not contain descriptor matching platform 'linux/amd64'
+```
+
+**Explanation:**
+- Docker images built on M-series Macs default to ARM64
+- ECS Fargate requires AMD64 (x86_64)
+- Docker containers share host kernel, not true VMs
+
+**Solution:**
+```bash
+# Delete wrong image
+aws ecr batch-delete-image \
+  --repository-name repo-reconnoiter-prod \
+  --image-ids imageTag=latest
+
+# Build for correct platform
+docker buildx build --platform linux/amd64 --push \
+  -t <ECR_URI>:latest .
+```
+
+### Issue 3: ECS tasks in backoff after failures
+
+**Symptoms:**
+- ECS shows `RunningCount: 0` with no new tasks starting
+- Service events: "unable to consistently start tasks successfully"
+
+**Solution:**
+```bash
+# Force ECS to retry with new image/config
+aws ecs update-service \
+  --cluster repo-reconnoiter-prod \
+  --service repo-reconnoiter-prod \
+  --force-new-deployment
+```
+
+### Issue 4: CloudFormation rollback in progress
+
+**Symptoms:**
+- Stack status: `ROLLBACK_IN_PROGRESS` or `ROLLBACK_COMPLETE`
+- Resources being deleted
+
+**What happened:**
+CloudFormation detected deployment failure and is cleaning up.
+
+**Solution:**
+```bash
+# Wait for rollback to complete
+aws cloudformation wait stack-rollback-complete \
+  --stack-name RepoReconnoiter-prod
+
+# Delete the failed stack
+aws cloudformation delete-stack --stack-name RepoReconnoiter-prod
+
+# Wait for deletion
+aws cloudformation wait stack-delete-complete \
+  --stack-name RepoReconnoiter-prod
+
+# Fix issues in CDK code, then redeploy
+npm run deploy
+```
+
+### Issue 5: Viewing container logs
+
+**Check application startup errors:**
+```bash
+# Tail all recent logs
+aws logs tail /ecs/repo-reconnoiter-prod --follow --since 10m
+
+# Filter for errors only
+aws logs filter-log-events \
+  --log-group-name /ecs/repo-reconnoiter-prod \
+  --start-time $(($(date +%s) - 600))000 \
+  --filter-pattern "ERROR"
+```
+
+### Issue 6: Verifying Docker image architecture
+
+**Check image platform:**
+```bash
+# Describe image details
+aws ecr describe-images \
+  --repository-name repo-reconnoiter-prod \
+  --image-ids imageTag=latest \
+  --query 'imageDetails[0].imageScanFindingsSummary'
+
+# Or inspect locally
+docker image inspect repo-reconnoiter:latest | grep Architecture
+```
+
+Should show: `"Architecture": "amd64"`
+
+### Quick Diagnostic Commands
+
+```bash
+# 1. Check CloudFormation stack status
+aws cloudformation describe-stacks \
+  --stack-name RepoReconnoiter-prod \
+  --query 'Stacks[0].StackStatus'
+
+# 2. Check ECS service health
+aws ecs describe-services \
+  --cluster repo-reconnoiter-prod \
+  --services repo-reconnoiter-prod \
+  --query 'services[0].{Running:runningCount,Desired:desiredCount}'
+
+# 3. Check recent task failures
+aws ecs list-tasks \
+  --cluster repo-reconnoiter-prod \
+  --desired-status STOPPED \
+  --max-results 1 | grep taskArn
+
+# 4. View application logs
+aws logs tail /ecs/repo-reconnoiter-prod --since 5m
+
+# 5. Verify Docker image exists
+aws ecr describe-images --repository-name repo-reconnoiter-prod
+```
 
 ---
 

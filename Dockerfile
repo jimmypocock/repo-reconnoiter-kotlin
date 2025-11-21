@@ -1,6 +1,7 @@
 # ============================================
 # Multi-Stage Dockerfile for Spring Boot 3.5
 # Java 21 | Gradle | Production-Ready
+# ADMIN VERSION: Includes Gradle for admin tasks
 # ============================================
 
 # ============================================
@@ -43,14 +44,17 @@ RUN mkdir -p build/dependency && \
     jar -xf ../libs/*.jar
 
 # ============================================
-# Stage 2: Runtime Stage
-# Uses lightweight JRE-only image
+# Stage 2: Admin Runtime Stage
+# Uses JDK (not JRE) + keeps Gradle for admin tasks
 # ============================================
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jdk-jammy
 
-# Install dumb-init for proper signal handling + curl for health checks
+# Install utilities: dumb-init, curl, mysql-client
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends dumb-init curl && \
+    apt-get install -y --no-install-recommends \
+        dumb-init \
+        curl \
+        mysql-client && \
     rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security
@@ -59,24 +63,31 @@ RUN groupadd -r spring && useradd -r -g spring spring
 # Set working directory
 WORKDIR /app
 
-# Copy extracted layers from builder
-ARG DEPENDENCY=/workspace/app/build/dependency
-COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
+# Copy Gradle wrapper and build files (needed for Gradle tasks)
+COPY --from=builder --chown=spring:spring /workspace/app/gradlew ./
+COPY --from=builder --chown=spring:spring /workspace/app/gradle gradle/
+COPY --from=builder --chown=spring:spring /workspace/app/gradle.properties ./
+COPY --from=builder --chown=spring:spring /workspace/app/settings.gradle.kts ./
+COPY --from=builder --chown=spring:spring /workspace/app/build.gradle.kts ./
 
-# Change ownership to non-root user
-RUN chown -R spring:spring /app
+# Copy source files (needed for Gradle tasks to work)
+COPY --from=builder --chown=spring:spring /workspace/app/src src/
+
+# Copy extracted layers from builder (for running the app)
+ARG DEPENDENCY=/workspace/app/build/dependency
+COPY --from=builder --chown=spring:spring ${DEPENDENCY}/BOOT-INF/lib lib/
+COPY --from=builder --chown=spring:spring ${DEPENDENCY}/META-INF META-INF/
+COPY --from=builder --chown=spring:spring ${DEPENDENCY}/BOOT-INF/classes classes/
 
 # Switch to non-root user
 USER spring:spring
 
-# Expose port (App Runner will use this)
+# Expose port
 EXPOSE 8080
 
-# Health check (App Runner uses this for readiness)
+# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/actuator/health || exit 1
+    CMD curl -f http://localhost:8080/api/v1/actuator/health || exit 1
 
 # Use dumb-init to handle signals properly (graceful shutdown)
 ENTRYPOINT ["dumb-init", "--"]
@@ -95,5 +106,5 @@ CMD ["java", \
      # Security settings
      "-Djava.security.egd=file:/dev/./urandom", \
      # Run the application
-     "-cp", ".:lib/*", \
+     "-cp", "classes:lib/*", \
      "com.reconnoiter.api.RepoReconnoiterApplicationKt"]
