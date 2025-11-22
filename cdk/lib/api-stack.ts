@@ -184,7 +184,7 @@ export class ApiStack extends cdk.Stack {
         DATABASE_URL: `jdbc:mysql://${database.dbInstanceEndpointAddress}:3306/reconnoiter`,
         DATABASE_USERNAME: 'reconnoiter',
         APP_FRONTEND_URL: 'https://reporeconnoiter.com', // Frontend URL for CORS and OAuth redirects
-        SENTRY_DSN: 'https://placeholder@sentry.io/placeholder', // Update with real Sentry DSN later
+        SENTRY_DSN: process.env.SENTRY_DSN || 'https://placeholder@sentry.io/placeholder', // Set via SENTRY_DSN env var
       },
       secrets: {
         DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'),
