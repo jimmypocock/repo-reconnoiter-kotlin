@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import java.time.LocalDateTime
 
 import com.reconnoiter.api.controller.RepositoryNotFoundException
+import com.reconnoiter.api.controller.InvalidSearchQueryException
+import com.reconnoiter.api.controller.ComparisonNotFoundException
 
 /**
  * Global Exception Handler
@@ -154,6 +156,38 @@ class GlobalExceptionHandler(
             timestamp = LocalDateTime.now()
         )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+    }
+
+    @ExceptionHandler(ComparisonNotFoundException::class)
+    fun handleComparisonNotFound(
+        ex: ComparisonNotFoundException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        logger.warn("Comparison not found: ${ex.message} - Path: ${request.requestURI}")
+        val errorResponse = ErrorResponse(
+            error = "Not Found",
+            message = ex.message ?: "Comparison not found",
+            path = request.requestURI,
+            status = HttpStatus.NOT_FOUND.value(),
+            timestamp = LocalDateTime.now()
+        )
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
+    }
+
+    @ExceptionHandler(InvalidSearchQueryException::class)
+    fun handleInvalidSearchQuery(
+        ex: InvalidSearchQueryException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        logger.warn("Invalid search query: ${ex.message} - Path: ${request.requestURI}")
+        val errorResponse = ErrorResponse(
+            error = "Bad Request",
+            message = ex.message ?: "Invalid search query",
+            path = request.requestURI,
+            status = HttpStatus.BAD_REQUEST.value(),
+            timestamp = LocalDateTime.now()
+        )
+        return ResponseEntity.badRequest().body(errorResponse)
     }
 
     @ExceptionHandler(RepositoryNotFoundException::class)

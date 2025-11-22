@@ -49,6 +49,11 @@ class ComparisonsController(
         @RequestParam(required = false, defaultValue = "1") page: Int,
         @RequestParam(required = false, defaultValue = "20", name = "per_page") perPage: Int
     ): ResponseEntity<PagedResponse<ComparisonResponse>> {
+        // Validate search query length (max 255 characters - standard HTML input limit)
+        if (!search.isNullOrBlank() && search.length > 255) {
+            throw InvalidSearchQueryException("Search query too long (max 255 characters)")
+        }
+
         // Cap per_page at 100
         val itemsPerPage = minOf(perPage, 100)
 
@@ -147,3 +152,5 @@ class ComparisonsController(
 }
 
 class ComparisonNotFoundException(message: String) : RuntimeException(message)
+
+class InvalidSearchQueryException(message: String) : RuntimeException(message)

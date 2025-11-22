@@ -53,6 +53,12 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	// Testcontainers for automated database testing
+	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:testcontainers")
+	testImplementation("org.testcontainers:mysql")
+	testImplementation("org.testcontainers:junit-jupiter")
 }
 
 kotlin {
@@ -69,6 +75,31 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+
+	// Show test results in terminal
+	testLogging {
+		events("passed", "skipped", "failed", "standardOut", "standardError")
+		exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+		showExceptions = true
+		showCauses = true
+		showStackTraces = true
+		showStandardStreams = false
+	}
+
+	// Print summary after tests
+	afterSuite(KotlinClosure2<TestDescriptor, TestResult, Unit>({ desc, result ->
+		if (desc.parent == null) { // Only print for the top-level suite
+			println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+			println("✅ Test Results")
+			println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+			println("Tests run: ${result.testCount}")
+			println("Passed: ${result.successfulTestCount}")
+			println("Failed: ${result.failedTestCount}")
+			println("Skipped: ${result.skippedTestCount}")
+			println("Time: ${result.endTime - result.startTime}ms")
+			println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+		}
+	}))
 }
 
 // Generate build info for actuator /info endpoint

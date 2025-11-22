@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service
 @Service
 object SearchSynonymExpander {
 
+    // MySQL BOOLEAN MODE special characters that need to be sanitized
+    // These characters have special meaning in FULLTEXT BOOLEAN MODE searches
+    private val BOOLEAN_MODE_SPECIAL_CHARS = Regex("[+\\-<>~\"()@]")
+
     private val SYNONYMS = mapOf(
         // Authentication & Authorization
         "auth" to listOf("auth", "authentication", "authorize", "authorization", "oauth", "sso", "login"),
@@ -73,6 +77,15 @@ object SearchSynonymExpander {
     )
 
     /**
+     * Sanitize a search term by removing MySQL BOOLEAN MODE special characters
+     * @param term The search term to sanitize
+     * @return Sanitized term with special characters removed
+     */
+    private fun sanitizeForBooleanMode(term: String): String {
+        return term.replace(BOOLEAN_MODE_SPECIAL_CHARS, "")
+    }
+
+    /**
      * Expand a search term with its synonyms
      * @param term The search term to expand
      * @return List of the term and its synonyms (deduped)
@@ -100,6 +113,8 @@ object SearchSynonymExpander {
         val terms = query.split(Regex("\\s+"))
             .map { it.trim() }
             .filter { it.isNotEmpty() }
+            .map { sanitizeForBooleanMode(it) }  // Sanitize BOOLEAN MODE special characters
+            .filter { it.isNotEmpty() }  // Re-filter in case sanitization left empty strings
 
         return expandAll(terms)
     }
