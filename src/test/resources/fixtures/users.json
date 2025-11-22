@@ -1,0 +1,22 @@
+[
+  {
+    "email": "testuser@example.com",
+    "github_id": 12345,
+    "github_username": "testuser",
+    "github_name": "Test User",
+    "github_avatar_url": "https://avatars.githubusercontent.com/u/12345",
+    "provider": "github",
+    "uid": "12345",
+    "whitelisted_user_github_id": 12345
+  },
+  {
+    "email": "another@example.com",
+    "github_id": 67890,
+    "github_username": "anotheruser",
+    "github_name": "Another User",
+    "github_avatar_url": "https://avatars.githubusercontent.com/u/67890",
+    "provider": "github",
+    "uid": "67890",
+    "whitelisted_user_github_id": 67890
+  }
+]

@@ -1,0 +1,169 @@
+[
+  {
+    "user_query": "Rails background job library with retry logic",
+    "normalized_query": "rails background job library with retry logic",
+    "view_count": 10,
+    "recommended_repo_full_name": "sidekiq/sidekiq",
+    "repos_compared_count": 3,
+    "input_tokens": 1000,
+    "output_tokens": 500,
+    "model_used": "gpt-5",
+    "cost_usd": 0.015,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Python ORM for PostgreSQL",
+    "normalized_query": "python orm for postgresql",
+    "view_count": 5,
+    "recommended_repo_full_name": "sqlalchemy/sqlalchemy",
+    "repos_compared_count": 3,
+    "input_tokens": 800,
+    "output_tokens": 400,
+    "model_used": "gpt-5",
+    "cost_usd": 0.012,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "JavaScript testing framework",
+    "normalized_query": "javascript testing framework",
+    "view_count": 15,
+    "repos_compared_count": 2,
+    "input_tokens": 500,
+    "output_tokens": 300,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.005,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "React state management",
+    "normalized_query": "react state management",
+    "view_count": 8,
+    "repos_compared_count": 2,
+    "input_tokens": 600,
+    "output_tokens": 350,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.006,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Node.js web framework",
+    "normalized_query": "nodejs web framework",
+    "view_count": 12,
+    "repos_compared_count": 3,
+    "input_tokens": 700,
+    "output_tokens": 400,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.007,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Go HTTP router",
+    "normalized_query": "go http router",
+    "view_count": 6,
+    "repos_compared_count": 2,
+    "input_tokens": 450,
+    "output_tokens": 250,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.004,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Python web scraping",
+    "normalized_query": "python web scraping",
+    "view_count": 9,
+    "repos_compared_count": 2,
+    "input_tokens": 550,
+    "output_tokens": 300,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.005,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Rust async runtime",
+    "normalized_query": "rust async runtime",
+    "view_count": 7,
+    "repos_compared_count": 2,
+    "input_tokens": 500,
+    "output_tokens": 280,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.005,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "TypeScript validation library",
+    "normalized_query": "typescript validation library",
+    "view_count": 11,
+    "repos_compared_count": 3,
+    "input_tokens": 650,
+    "output_tokens": 380,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.006,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Vue component library",
+    "normalized_query": "vue component library",
+    "view_count": 4,
+    "repos_compared_count": 2,
+    "input_tokens": 480,
+    "output_tokens": 270,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.004,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Docker container orchestration",
+    "normalized_query": "docker container orchestration",
+    "view_count": 13,
+    "repos_compared_count": 2,
+    "input_tokens": 720,
+    "output_tokens": 410,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.007,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "GraphQL client for React",
+    "normalized_query": "graphql client for react",
+    "view_count": 10,
+    "repos_compared_count": 2,
+    "input_tokens": 600,
+    "output_tokens": 340,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.006,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Machine learning framework Python",
+    "normalized_query": "machine learning framework python",
+    "view_count": 18,
+    "repos_compared_count": 3,
+    "input_tokens": 800,
+    "output_tokens": 450,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.008,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "CSS-in-JS library",
+    "normalized_query": "css in js library",
+    "view_count": 5,
+    "repos_compared_count": 2,
+    "input_tokens": 500,
+    "output_tokens": 290,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.005,
+    "user_email": "testuser@example.com"
+  },
+  {
+    "user_query": "Database migration tool",
+    "normalized_query": "database migration tool",
+    "view_count": 14,
+    "repos_compared_count": 2,
+    "input_tokens": 680,
+    "output_tokens": 390,
+    "model_used": "gpt-5-mini",
+    "cost_usd": 0.007,
+    "user_email": "testuser@example.com"
+  }
+]

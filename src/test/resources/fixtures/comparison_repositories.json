@@ -1,0 +1,23 @@
+[
+  {
+    "comparison_user_query": "Rails background job library with retry logic",
+    "repository_full_name": "sidekiq/sidekiq",
+    "ranking": 1,
+    "score": 95,
+    "fit_reasoning": "Industry standard background job processor for Ruby/Rails with built-in retry logic and excellent documentation"
+  },
+  {
+    "comparison_user_query": "Python ORM for PostgreSQL",
+    "repository_full_name": "sqlalchemy/sqlalchemy",
+    "ranking": 1,
+    "score": 93,
+    "fit_reasoning": "Most popular and feature-complete ORM for Python with excellent PostgreSQL support"
+  },
+  {
+    "comparison_user_query": "Rails background job library with retry logic",
+    "repository_full_name": "test/repo-without-analyses",
+    "ranking": 3,
+    "score": 45,
+    "fit_reasoning": "Alternative background job library with basic retry capabilities but less mature"
+  }
+]

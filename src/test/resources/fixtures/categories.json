@@ -1,0 +1,1526 @@
+[
+  {
+    "name": "Actor-Based Architecture",
+    "slug": "actor-based-architecture",
+    "description": "Actor-Based Architecture architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Administration Tools",
+    "slug": "administration-tools",
+    "description": "Tools and libraries for administration tools",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "AI Assistants",
+    "slug": "ai-assistants",
+    "description": "AI Assistants programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "AI Writing Tools",
+    "slug": "ai-writing-tools",
+    "description": "Tools and libraries for ai writing tools",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Android",
+    "slug": "android",
+    "description": "Android programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Angular",
+    "slug": "angular",
+    "description": "Angular programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "API Client Generation",
+    "slug": "api-client-generation",
+    "description": "Tools and libraries for api client generation",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "API-First Design",
+    "slug": "api-first-design",
+    "description": "API-First Design architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "API Integration",
+    "slug": "api-integration",
+    "description": "Tools and libraries for api integration",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "API Security Framework",
+    "slug": "api-security-framework",
+    "description": "Tools and libraries for api security framework",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Apollo",
+    "slug": "apollo",
+    "description": "Apollo programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Artificial Intelligence",
+    "slug": "artificial-intelligence",
+    "description": "Tools and libraries for artificial intelligence",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Astrodynamics",
+    "slug": "astrodynamics",
+    "description": "Astrodynamics programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Astronomy And Astrophysics",
+    "slug": "astronomy-and-astrophysics",
+    "description": "Tools and libraries for astronomy and astrophysics",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Async",
+    "slug": "async",
+    "description": "Async programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Async-Orm",
+    "slug": "async-orm",
+    "description": "Tools and libraries for async-orm",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Asynchronous Programming",
+    "slug": "asynchronous-programming",
+    "description": "AI-generated category",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Authentication",
+    "slug": "authentication",
+    "description": "Tools and libraries for authentication",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Authentication Framework",
+    "slug": "authentication-framework",
+    "description": "Authentication Framework architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Automation Tools",
+    "slug": "automation-tools",
+    "description": "Tools and libraries for automation tools",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Aws",
+    "slug": "aws",
+    "description": "Aws programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Aws Lambda",
+    "slug": "aws-lambda",
+    "description": "Aws Lambda programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Backend Applications",
+    "slug": "backend-applications",
+    "description": "Tools and libraries for backend applications",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Background Job Processing",
+    "slug": "background-job-processing",
+    "description": "Tools and libraries for background job processing",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Bevy",
+    "slug": "bevy",
+    "description": "Bevy programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Blockchain Technology",
+    "slug": "blockchain-technology",
+    "description": "Blockchain Technology programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Buckle Script",
+    "slug": "buckle-script",
+    "description": "Buckle Script programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Bukkit Plugin",
+    "slug": "bukkit-plugin",
+    "description": "Bukkit Plugin programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "C#",
+    "slug": "c",
+    "description": "C# programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Caching",
+    "slug": "caching",
+    "description": "Tools and libraries for caching",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Cdk",
+    "slug": "cdk",
+    "description": "Cdk programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Chart Generation",
+    "slug": "chart-generation",
+    "description": "Tools and libraries for chart generation",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Chatbot Framework",
+    "slug": "chatbot-framework",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "CLI Tools",
+    "slug": "cli-tools",
+    "description": "CLI Tools architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Code Generation Tools",
+    "slug": "code-generation-tools",
+    "description": "Code Generation Tools architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Combinatorics",
+    "slug": "combinatorics",
+    "description": "Combinatorics programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Computer Graphics",
+    "slug": "computer-graphics",
+    "description": "Computer Graphics programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Computer Vision",
+    "slug": "computer-vision",
+    "description": "Tools and libraries for computer vision",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Concurrent Ruby",
+    "slug": "concurrent-ruby",
+    "description": "Concurrent Ruby programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Context Awareness",
+    "slug": "context-awareness",
+    "description": "AI-generated category",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Continuous Deployment",
+    "slug": "continuous-deployment",
+    "description": "Tools and libraries for continuous deployment",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Crd Ts",
+    "slug": "crd-ts",
+    "description": "Crd Ts programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Cron Job Management",
+    "slug": "cron-job-management",
+    "description": "Tools and libraries for cron job management",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Cross Platform",
+    "slug": "cross-platform",
+    "description": "Cross Platform programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Cross-Platform Development",
+    "slug": "cross-platform-development",
+    "description": "Cross-Platform Development architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Curated Lists",
+    "slug": "curated-lists",
+    "description": "Curated Lists architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Data Access",
+    "slug": "data-access",
+    "description": "Tools and libraries for data access",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Data Deserialization",
+    "slug": "data-deserialization",
+    "description": "Data Deserialization programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Data Fetching",
+    "slug": "data-fetching",
+    "description": "Tools and libraries for data fetching",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Data Parsing",
+    "slug": "data-parsing",
+    "description": "Tools and libraries for data parsing",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Data Processing",
+    "slug": "data-processing",
+    "description": "Data Processing architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Data Processing Framework",
+    "slug": "data-processing-framework",
+    "description": "AI-generated category",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Data Structures",
+    "slug": "data-structures",
+    "description": "Tools and libraries for data structures",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Data Validation",
+    "slug": "data-validation",
+    "description": "Tools and libraries for data validation",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Data Visualization",
+    "slug": "data-visualization",
+    "description": "Tools and libraries for data visualization",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Database Tools",
+    "slug": "database-tools",
+    "description": "Tools and libraries for database tools",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Deep Learning",
+    "slug": "deep-learning",
+    "description": "Deep Learning programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Dev Ops Tools",
+    "slug": "dev-ops-tools",
+    "description": "Tools and libraries for dev ops tools",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Developer Tools",
+    "slug": "developer-tools",
+    "description": "Developer Tools architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Differentiable Physics Simulation",
+    "slug": "differentiable-physics-simulation",
+    "description": "Tools and libraries for differentiable physics simulation",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Differentiable Programming",
+    "slug": "differentiable-programming",
+    "description": "Differentiable Programming architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Differentiable Robotics",
+    "slug": "differentiable-robotics",
+    "description": "Tools and libraries for differentiable robotics",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Distributed Systems",
+    "slug": "distributed-systems",
+    "description": "Distributed Systems architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Django",
+    "slug": "django",
+    "description": "Django programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Docker",
+    "slug": "docker",
+    "description": "Docker programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Dockerized Applications",
+    "slug": "dockerized-applications",
+    "description": "Dockerized Applications architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Dockerized Rails Applications",
+    "slug": "dockerized-rails-applications",
+    "description": "Tools and libraries for dockerized rails applications",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "E-Commerce Solutions",
+    "slug": "e-commerce-solutions",
+    "description": "Tools and libraries for e-commerce solutions",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Elixir",
+    "slug": "elixir",
+    "description": "Elixir programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Email",
+    "slug": "email",
+    "description": "Tools and libraries for email",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Email Validation",
+    "slug": "email-validation",
+    "description": "Tools and libraries for email validation",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Encryption",
+    "slug": "encryption",
+    "description": "Tools and libraries for encryption",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Etl",
+    "slug": "etl",
+    "description": "Etl programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Event-Driven Architecture",
+    "slug": "event-driven-architecture",
+    "description": "Event-Driven Architecture architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Express Framework",
+    "slug": "express-framework",
+    "description": "Express Framework programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Fast Api",
+    "slug": "fast-api",
+    "description": "Fast Api programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "File Processing",
+    "slug": "file-processing",
+    "description": "Tools and libraries for file processing",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "File Processing Framework",
+    "slug": "file-processing-framework",
+    "description": "File Processing Framework architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Frontend Frameworks",
+    "slug": "frontend-frameworks",
+    "description": "Frontend Frameworks architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Fullstack Framework",
+    "slug": "fullstack-framework",
+    "description": "Fullstack Framework architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Fullstack Tutorial",
+    "slug": "fullstack-tutorial",
+    "description": "Tools and libraries for fullstack tutorial",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Game Development",
+    "slug": "game-development",
+    "description": "Tools and libraries for game development",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Game Engine",
+    "slug": "game-engine",
+    "description": "Game Engine architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "General Purpose Allocator",
+    "slug": "general-purpose-allocator",
+    "description": "General Purpose Allocator architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Go",
+    "slug": "go",
+    "description": "Go programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Graph Ql",
+    "slug": "graph-ql",
+    "description": "Graph Ql programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Graphics",
+    "slug": "graphics",
+    "description": "Graphics programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "GraphQL",
+    "slug": "graphql",
+    "description": "Tools and libraries for graphql",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "GraphQL API Development",
+    "slug": "graphql-api-development",
+    "description": "Tools and libraries for graphql api development",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "GraphQL Federation",
+    "slug": "graphql-federation",
+    "description": "GraphQL Federation architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Headless Commerce",
+    "slug": "headless-commerce",
+    "description": "Tools and libraries for headless commerce",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Html",
+    "slug": "html",
+    "description": "Html programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "HTML Manipulation",
+    "slug": "html-manipulation",
+    "description": "Tools and libraries for html manipulation",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "htmx",
+    "slug": "htmx",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Http",
+    "slug": "http",
+    "description": "Http programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "HTTP Client",
+    "slug": "http-client",
+    "description": "Tools and libraries for http client",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Icon Generation",
+    "slug": "icon-generation",
+    "description": "AI-generated category",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Icons",
+    "slug": "icons",
+    "description": "Auto-generated from comparison query",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Identity and Access Management",
+    "slug": "identity-and-access-management",
+    "description": "AI-generated category",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Identity Management",
+    "slug": "identity-management",
+    "description": "Tools and libraries for identity management",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Image Analysis",
+    "slug": "image-analysis",
+    "description": "Image Analysis programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Interactive Learning Tools",
+    "slug": "interactive-learning-tools",
+    "description": "Tools and libraries for interactive learning tools",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Inverse Problems",
+    "slug": "inverse-problems",
+    "description": "Tools and libraries for inverse problems",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Invoice Processing",
+    "slug": "invoice-processing",
+    "description": "Tools and libraries for invoice processing",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Jamstack",
+    "slug": "jamstack",
+    "description": "Jamstack programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Java",
+    "slug": "java",
+    "description": "Java programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Java Framework",
+    "slug": "java-framework",
+    "description": "Java Framework programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Java Script Transpilation",
+    "slug": "java-script-transpilation",
+    "description": "Java Script Transpilation architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "JavaScript",
+    "slug": "javascript",
+    "description": "JavaScript programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Jax",
+    "slug": "jax",
+    "description": "Jax programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Job Scheduler",
+    "slug": "job-scheduler",
+    "description": "Job Scheduler architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "JSON Parsing",
+    "slug": "json-parsing",
+    "description": "Tools and libraries for json parsing",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Jupyter Notebook",
+    "slug": "jupyter-notebook",
+    "description": "Jupyter Notebook programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Jwt",
+    "slug": "jwt",
+    "description": "Jwt programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Knowledge Base Management",
+    "slug": "knowledge-base-management",
+    "description": "Tools and libraries for knowledge base management",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Kotlin",
+    "slug": "kotlin",
+    "description": "Kotlin programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Kubernetes",
+    "slug": "kubernetes",
+    "description": "Kubernetes programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Laravel",
+    "slug": "laravel",
+    "description": "Laravel programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Layered Architecture",
+    "slug": "layered-architecture",
+    "description": "AI-generated category",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Linear Operators",
+    "slug": "linear-operators",
+    "description": "Tools and libraries for linear operators",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Llvm",
+    "slug": "llvm",
+    "description": "Llvm programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Machine Learning",
+    "slug": "machine-learning",
+    "description": "Machine Learning programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Management Accounting",
+    "slug": "management-accounting",
+    "description": "Tools and libraries for management accounting",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Material Ui",
+    "slug": "material-ui",
+    "description": "Material Ui programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Mathematics",
+    "slug": "mathematics",
+    "description": "Tools and libraries for mathematics",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Medical Physics Image Analysis",
+    "slug": "medical-physics-image-analysis",
+    "description": "Tools and libraries for medical physics image analysis",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Memory Allocation",
+    "slug": "memory-allocation",
+    "description": "Tools and libraries for memory allocation",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Microservices Architecture",
+    "slug": "microservices-architecture",
+    "description": "Microservices Architecture architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Microservices Tooling",
+    "slug": "microservices-tooling",
+    "description": "Microservices Tooling architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Mobile Applications",
+    "slug": "mobile-applications",
+    "description": "Tools and libraries for mobile applications",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Model Conversion Framework",
+    "slug": "model-conversion-framework",
+    "description": "Model Conversion Framework architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Modular Game Engine",
+    "slug": "modular-game-engine",
+    "description": "Modular Game Engine programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Molecular Dynamics",
+    "slug": "molecular-dynamics",
+    "description": "Molecular Dynamics programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Molecular Graphics",
+    "slug": "molecular-graphics",
+    "description": "Molecular Graphics programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "MongoDB",
+    "slug": "mongodb",
+    "description": "MongoDB programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Monitoring",
+    "slug": "monitoring",
+    "description": "Tools and libraries for monitoring",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Monolith Utilities",
+    "slug": "monolith-utilities",
+    "description": "Monolith Utilities architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Multi Fidelity Data",
+    "slug": "multi-fidelity-data",
+    "description": "Multi Fidelity Data programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Multilinear Algebra",
+    "slug": "multilinear-algebra",
+    "description": "Tools and libraries for multilinear algebra",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Multilingual Speech Recognition",
+    "slug": "multilingual-speech-recognition",
+    "description": "Tools and libraries for multilingual speech recognition",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Multiplayer Networking",
+    "slug": "multiplayer-networking",
+    "description": "Tools and libraries for multiplayer networking",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Multithreaded Architecture",
+    "slug": "multithreaded-architecture",
+    "description": "Multithreaded Architecture architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "My Batis",
+    "slug": "my-batis",
+    "description": "My Batis programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "MySQL",
+    "slug": "mysql",
+    "description": "MySQL programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Network Security",
+    "slug": "network-security",
+    "description": "Tools and libraries for network security",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Neural Networks",
+    "slug": "neural-networks",
+    "description": "Tools and libraries for neural networks",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Next.Js",
+    "slug": "next-js",
+    "description": "Next.Js programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Node.js",
+    "slug": "node-js",
+    "description": "Node.js programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Num Py",
+    "slug": "num-py",
+    "description": "Num Py programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Numerical Analysis",
+    "slug": "numerical-analysis",
+    "description": "Tools and libraries for numerical analysis",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Numerical Computing",
+    "slug": "numerical-computing",
+    "description": "Numerical Computing programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Numpy",
+    "slug": "numpy",
+    "description": "Numpy programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "O Auth",
+    "slug": "o-auth",
+    "description": "O Auth programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "O Auth Support",
+    "slug": "o-auth-support",
+    "description": "O Auth Support architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "O Caml",
+    "slug": "o-caml",
+    "description": "O Caml programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Onion Architecture",
+    "slug": "onion-architecture",
+    "description": "AI-generated category",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Open Gl",
+    "slug": "open-gl",
+    "description": "Open Gl programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Open Id Connect",
+    "slug": "open-id-connect",
+    "description": "Open Id Connect programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Open Policy Agent",
+    "slug": "open-policy-agent",
+    "description": "Open Policy Agent programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "OpenShift",
+    "slug": "openshift",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Optimization",
+    "slug": "optimization",
+    "description": "Optimization programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "ORM Framework",
+    "slug": "orm-framework",
+    "description": "AI-generated category",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Pandas",
+    "slug": "pandas",
+    "description": "Pandas programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Payment Processing",
+    "slug": "payment-processing",
+    "description": "Payment gateways, billing systems, subscription management",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Pdf Generation",
+    "slug": "pdf-generation",
+    "description": "Pdf Generation programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Performance",
+    "slug": "performance",
+    "description": "Tools and libraries for performance",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Phoenix Framework",
+    "slug": "phoenix-framework",
+    "description": "Phoenix Framework programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "PHP",
+    "slug": "php",
+    "description": "PHP programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Physics-Informed Learning",
+    "slug": "physics-informed-learning",
+    "description": "Tools and libraries for physics-informed learning",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Physics-Inspired Computer Vision",
+    "slug": "physics-inspired-computer-vision",
+    "description": "Tools and libraries for physics-inspired computer vision",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Physics Simulation Library",
+    "slug": "physics-simulation-library",
+    "description": "Tools and libraries for physics simulation library",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Play Framework",
+    "slug": "play-framework",
+    "description": "Play Framework programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Plugin Architecture",
+    "slug": "plugin-architecture",
+    "description": "Plugin Architecture architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "PostgreSQL",
+    "slug": "postgresql",
+    "description": "PostgreSQL programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Prawn",
+    "slug": "prawn",
+    "description": "Prawn programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Productivity Tools",
+    "slug": "productivity-tools",
+    "description": "Tools and libraries for productivity tools",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Profiler Tools",
+    "slug": "profiler-tools",
+    "description": "Tools and libraries for profiler tools",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Progressive Web Apps",
+    "slug": "progressive-web-apps",
+    "description": "Progressive Web Apps architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Py Torch",
+    "slug": "py-torch",
+    "description": "Py Torch programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Pygame",
+    "slug": "pygame",
+    "description": "Pygame programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Pyglet",
+    "slug": "pyglet",
+    "description": "Pyglet programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Python",
+    "slug": "python",
+    "description": "Python programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Python Library",
+    "slug": "python-library",
+    "description": "Python Library programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Quantum Computing Library",
+    "slug": "quantum-computing-library",
+    "description": "Tools and libraries for quantum computing library",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Radiation Oncology",
+    "slug": "radiation-oncology",
+    "description": "Radiation Oncology programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Rails",
+    "slug": "rails",
+    "description": "Rails programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "React",
+    "slug": "react",
+    "description": "React programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "React Applications",
+    "slug": "react-applications",
+    "description": "Tools and libraries for react applications",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Real-Time Communication",
+    "slug": "real-time-communication",
+    "description": "Tools and libraries for real-time communication",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Real-Time Data Access",
+    "slug": "real-time-data-access",
+    "description": "Tools and libraries for real-time data access",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Real Time Web Applications",
+    "slug": "real-time-web-applications",
+    "description": "Real Time Web Applications programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Recommendation-Engine",
+    "slug": "recommendation-engine",
+    "description": "Tools and libraries for recommendation-engine",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Redis",
+    "slug": "redis",
+    "description": "Redis programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Redux",
+    "slug": "redux",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Redux Middleware",
+    "slug": "redux-middleware",
+    "description": "Redux Middleware architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Reverse Proxy",
+    "slug": "reverse-proxy",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Robotics",
+    "slug": "robotics",
+    "description": "Robotics programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Ruby",
+    "slug": "ruby",
+    "description": "Ruby programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "RubyGems",
+    "slug": "rubygems",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Rust",
+    "slug": "rust",
+    "description": "Rust programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Rx Js",
+    "slug": "rx-js",
+    "description": "Rx Js programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Scala",
+    "slug": "scala",
+    "description": "Scala programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Scheduler",
+    "slug": "scheduler",
+    "description": "Scheduler programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Scientific Computing",
+    "slug": "scientific-computing",
+    "description": "Scientific Computing architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Search",
+    "slug": "search",
+    "description": "Tools and libraries for search",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Security",
+    "slug": "security",
+    "description": "Tools and libraries for security",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Security Analysis",
+    "slug": "security-analysis",
+    "description": "Tools and libraries for security analysis",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Self-Hosted Applications",
+    "slug": "self-hosted-applications",
+    "description": "Tools and libraries for self-hosted applications",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Serialization Framework",
+    "slug": "serialization-framework",
+    "description": "Serialization Framework architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Server Components / Ssr Framework",
+    "slug": "server-components-ssr-framework",
+    "description": "Tools and libraries for server components / ssr framework",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Server-Side Rendering",
+    "slug": "server-side-rendering",
+    "description": "Server-Side Rendering architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Serverless Applications",
+    "slug": "serverless-applications",
+    "description": "Tools and libraries for serverless applications",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Serverless Architecture",
+    "slug": "serverless-architecture",
+    "description": "Serverless Architecture architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Session Management",
+    "slug": "session-management",
+    "description": "AI-generated category",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Shell",
+    "slug": "shell",
+    "description": "Shell programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Shell Scripting",
+    "slug": "shell-scripting",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Shiro",
+    "slug": "shiro",
+    "description": "Shiro programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Sidekiq",
+    "slug": "sidekiq",
+    "description": "Sidekiq programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Slab Allocator",
+    "slug": "slab-allocator",
+    "description": "Tools and libraries for slab allocator",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Smarty",
+    "slug": "smarty",
+    "description": "Smarty programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Solana Development",
+    "slug": "solana-development",
+    "description": "Tools and libraries for solana development",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Spring",
+    "slug": "spring",
+    "description": "Spring programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Spring Framework",
+    "slug": "spring-framework",
+    "description": "Spring Framework programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Spring Security",
+    "slug": "spring-security",
+    "description": "Spring Security programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "State Management",
+    "slug": "state-management",
+    "description": "State Management architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Static Analysis Tools",
+    "slug": "static-analysis-tools",
+    "description": "Static Analysis Tools architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "SVG",
+    "slug": "svg",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Swagger",
+    "slug": "swagger",
+    "description": "Swagger programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Swift",
+    "slug": "swift",
+    "description": "Swift programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "templ",
+    "slug": "templ",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Tensor Flow",
+    "slug": "tensor-flow",
+    "description": "Tensor Flow programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Tensor Network Calculations",
+    "slug": "tensor-network-calculations",
+    "description": "Tools and libraries for tensor network calculations",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Tensor Networks",
+    "slug": "tensor-networks",
+    "description": "Tensor Networks architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Testing",
+    "slug": "testing",
+    "description": "Testing programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Throttling",
+    "slug": "throttling",
+    "description": "Tools and libraries for throttling",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Tiny Allocator",
+    "slug": "tiny-allocator",
+    "description": "Tiny Allocator architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Tree Structure Management",
+    "slug": "tree-structure-management",
+    "description": "AI-generated category",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "tui",
+    "slug": "tui",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Type Hints",
+    "slug": "type-hints",
+    "description": "Type Hints architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "TypeScript",
+    "slug": "typescript",
+    "description": "TypeScript programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Ui Components",
+    "slug": "ui-components",
+    "description": "Tools and libraries for ui components",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Utility AI Library",
+    "slug": "utility-ai-library",
+    "description": "Tools and libraries for utility ai library",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Validation-Framework",
+    "slug": "validation-framework",
+    "description": "Validation-Framework architectural pattern and related tools",
+    "category_type": "architecture_pattern"
+  },
+  {
+    "name": "Vector Search",
+    "slug": "vector-search",
+    "description": "AI-generated category",
+    "category_type": "technology"
+  },
+  {
+    "name": "Vtk",
+    "slug": "vtk",
+    "description": "Vtk programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Vue.js",
+    "slug": "vue-js",
+    "description": "Vue.js programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Web Assembly",
+    "slug": "web-assembly",
+    "description": "Web Assembly programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Web Crawling And Scraping",
+    "slug": "web-crawling-and-scraping",
+    "description": "Tools and libraries for web crawling and scraping",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Web Framework",
+    "slug": "web-framework",
+    "description": "Tools and libraries for web framework",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Web Framework Benchmarking",
+    "slug": "web-framework-benchmarking",
+    "description": "Tools and libraries for web framework benchmarking",
+    "category_type": "problem_domain"
+  },
+  {
+    "name": "Web Rtc",
+    "slug": "web-rtc",
+    "description": "Web Rtc programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Web Sockets",
+    "slug": "web-sockets",
+    "description": "Web Sockets programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Zig",
+    "slug": "zig",
+    "description": "Zig programming language and tools",
+    "category_type": "technology"
+  },
+  {
+    "name": "Zig Programming Language",
+    "slug": "zig-programming-language",
+    "description": "Zig Programming Language programming language and tools",
+    "category_type": "technology"
+  }
+]

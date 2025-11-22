@@ -1,0 +1,26 @@
+[
+  {
+    "github_id": 1234567,
+    "github_username": "test-user-1",
+    "email": "testuser1@example.com",
+    "notes": "Test user for integration tests",
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z"
+  },
+  {
+    "github_id": 7654321,
+    "github_username": "test-user-2",
+    "email": "testuser2@example.com",
+    "notes": "Another test user",
+    "created_at": "2025-01-05T00:00:00Z",
+    "updated_at": "2025-01-05T00:00:00Z"
+  },
+  {
+    "github_id": 9999999,
+    "github_username": "octocat",
+    "email": "octocat@github.com",
+    "notes": "GitHub mascot for testing",
+    "created_at": "2025-01-10T00:00:00Z",
+    "updated_at": "2025-01-10T00:00:00Z"
+  }
+]

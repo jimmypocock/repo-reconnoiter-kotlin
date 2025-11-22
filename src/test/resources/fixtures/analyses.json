@@ -1,0 +1,16 @@
+[
+  {
+    "repository_full_name": "sidekiq/sidekiq",
+    "type": "tier1_categorization",
+    "model_used": "gpt-5-mini",
+    "summary": "A background job processor",
+    "is_current": true
+  },
+  {
+    "repository_full_name": "sqlalchemy/sqlalchemy",
+    "type": "tier1_categorization",
+    "model_used": "gpt-5-mini",
+    "summary": "A Python ORM library",
+    "is_current": true
+  }
+]
